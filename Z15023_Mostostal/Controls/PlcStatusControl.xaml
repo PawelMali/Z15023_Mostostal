@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="Z15023_Mostostal.Controls.PlcStatusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Z15023_Mostostal.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:PlcViewModel}"
+             Margin="10">
+
+    <UserControl.Resources>
+        <Style TargetType="Border" x:Key="MainBorderStyle">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Alarm}" Value="True">
+                    <Setter Property="Background" Value="#FFF0F0"/>
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Warning}" Value="True">
+                    <Setter Property="Background" Value="#FFFFF0"/>
+                    <Setter Property="BorderBrush" Value="Orange"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Style="{StaticResource MainBorderStyle}" Padding="15" MinWidth="250">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding MachineName}" FontSize="18" FontWeight="Bold" Grid.Row="0" Margin="0,0,0,10"/>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,5">
+                <TextBlock Text="Tryb Pracy: " FontWeight="SemiBold"/>
+
+                <TextBlock Text="Automatyczny" Foreground="Green" FontWeight="Bold" Margin="5,0,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AutoMode}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <TextBlock Text="Ręczny" Foreground="Blue" FontWeight="Bold" Margin="5,0,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ManualMode}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,5">
+                <TextBlock Text="Status: " FontWeight="SemiBold"/>
+                <Ellipse Width="15" Height="15" Margin="5,0,0,0" Stroke="Black" StrokeThickness="1">
+                    <Ellipse.Style>
+                        <Style TargetType="Ellipse">
+                            <Setter Property="Fill" Value="LightGray"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AutoActive}" Value="True">
+                                    <Setter Property="Fill" Value="LimeGreen"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Ellipse.Style>
+                </Ellipse>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,15,0,0">
+                <TextBlock Text="Sztuki: " FontSize="16"/>
+                <TextBlock Text="{Binding PartCounter}" FontSize="16" FontWeight="Bold" Foreground="DarkSlateBlue"/>
+            </StackPanel>
+
+            <Border Grid.Row="0" Grid.RowSpan="4" Background="#CCFFFFFF" CornerRadius="8">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible"/>
+
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock Text="BRAK POŁĄCZENIA" 
+               FontWeight="Bold" 
+               Foreground="Red" 
+               FontSize="20" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

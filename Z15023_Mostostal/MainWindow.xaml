@@ -4,9 +4,68 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Z15023_Mostostal"
+        xmlns:vm="clr-namespace:Z15023_Mostostal.ViewModels"
+        xmlns:controls="clr-namespace:Z15023_Mostostal.Controls" 
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+
+
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" 
+                   Text="Status Maszyny 1:" 
+                   FontWeight="Bold" 
+                   Margin="0,0,15,10" 
+                   FontSize="16"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="1" 
+                   Text="{Binding Plc1Status}" 
+                   Margin="0,0,0,10" 
+                   FontSize="16" 
+                   Foreground="DarkBlue"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" 
+                   Text="Wyprodukowano detali:" 
+                   FontWeight="Bold" 
+                   Margin="0,0,15,0" 
+                   FontSize="16"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="1" 
+                   Text="{Binding Plc1ProductionTotal}" 
+                   FontSize="16" 
+                   Foreground="DarkGreen"/>
+
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Content="Wyślij Zlecenie do PLC 1" 
+                Command="{Binding SendOrderCommand}" 
+                Width="220" Height="40" 
+                Margin="0,20,0,0" 
+                HorizontalAlignment="Left"
+                FontSize="14" FontWeight="Bold"
+                Cursor="Hand"/>
+
+            <UniformGrid Grid.Row="1" Columns="2" Rows="2">
+
+                <controls:PlcStatusControl DataContext="{Binding Plc1}"/>
+
+                <controls:PlcStatusControl DataContext="{Binding Plc2}"/>
+
+                <controls:PlcStatusControl DataContext="{Binding Plc3}"/>
+                <controls:PlcStatusControl DataContext="{Binding Plc4}"/>
+
+            </UniformGrid>
+        </Grid>
+
 
     </Grid>
 </Window>
