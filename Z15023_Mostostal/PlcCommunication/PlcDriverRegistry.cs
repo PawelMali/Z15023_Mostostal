@@ -2,9 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using Z15023_Mostostal.PlcCommunication.Drivers;
+using Z25023_Mostostal.PlcCommunication.Drivers;
 
-namespace Z15023_Mostostal.PlcCommunication
+namespace Z25023_Mostostal.PlcCommunication
 {
     public class PlcDriverRegistry
     {

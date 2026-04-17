@@ -1,100 +1,175 @@
-﻿<UserControl x:Class="Z15023_Mostostal.Controls.PlcStatusControl"
+﻿<UserControl x:Class="Z25023_Mostostal.Controls.PlcStatusControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:Z15023_Mostostal.ViewModels"
-             mc:Ignorable="d"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Z25023_Mostostal.ViewModels"
+             mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=vm:PlcViewModel}"
-             Margin="10">
+             Margin="10" MinWidth="800">
 
     <UserControl.Resources>
-        <Style TargetType="Border" x:Key="MainBorderStyle">
-            <Setter Property="Background" Value="#F5F5F5"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Alarm}" Value="True">
-                    <Setter Property="Background" Value="#FFF0F0"/>
-                    <Setter Property="BorderBrush" Value="Red"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Warning}" Value="True">
-                    <Setter Property="Background" Value="#FFFFF0"/>
-                    <Setter Property="BorderBrush" Value="Orange"/>
-                </DataTrigger>
-            </Style.Triggers>
+        <Style TargetType="Border" x:Key="StatusBorderStyle">
+            <Setter Property="BorderBrush" Value="DodgerBlue"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="#F8F8F8"/>
         </Style>
     </UserControl.Resources>
 
-    <Border Style="{StaticResource MainBorderStyle}" Padding="15" MinWidth="250">
+    <Border Style="{StaticResource StatusBorderStyle}" Padding="10">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="{Binding MachineName}" FontSize="18" FontWeight="Bold" Grid.Row="0" Margin="0,0,0,10"/>
+            <Label Content="{Binding MachineName}" Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,0" Height="35" FontSize="16" >
+                <Label.Style>
+                    <Style TargetType="Label" BasedOn="{StaticResource HeadersLabel}">
+                    </Style>
+                </Label.Style>
+             </Label>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,5">
-                <TextBlock Text="Tryb Pracy: " FontWeight="SemiBold"/>
-
-                <TextBlock Text="Automatyczny" Foreground="Green" FontWeight="Bold" Margin="5,0,0,0">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding AutoMode}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Text="Ręczny" Foreground="Blue" FontWeight="Bold" Margin="5,0,0,0">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ManualMode}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,0">
+                <TextBlock Text="♥ : " FontSize="16" Foreground="DodgerBlue" VerticalAlignment="Center"/>
+                <TextBlock Text="Life: " FontSize="16" Foreground="Gray" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding LifeSignal}" FontSize="12" FontWeight="Bold" Foreground="DodgerBlue" VerticalAlignment="Center" Width="30"/>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,5">
-                <TextBlock Text="Status: " FontWeight="SemiBold"/>
-                <Ellipse Width="15" Height="15" Margin="5,0,0,0" Stroke="Black" StrokeThickness="1">
-                    <Ellipse.Style>
-                        <Style TargetType="Ellipse">
-                            <Setter Property="Fill" Value="LightGray"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding AutoActive}" Value="True">
-                                    <Setter Property="Fill" Value="LimeGreen"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Ellipse.Style>
-                </Ellipse>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+
+                    <Grid Margin="0,15,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="75"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="STATUS:" Style="{StaticResource HeadersLabel}" Width="70" Height="35"/>
+
+                        <Label Grid.Column="1" Content="ALARM" Width="145" HorizontalAlignment="Left" Height="35">
+                            <Label.Style>
+                                <Style TargetType="Label" BasedOn="{StaticResource NokLabel}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Alarm}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+
+                        <Label Grid.Column="1" Content="OSTRZEŻENIE" Width="145" HorizontalAlignment="Left" Height="35">
+                            <Label.Style>
+                                <Style TargetType="Label" BasedOn="{StaticResource WarningLabel}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Warning}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+
+                        <Label Grid.Column="1" Content="ZATRZYMANA" Width="145" HorizontalAlignment="Left" Height="35">
+                            <Label.Style>
+                                <Style TargetType="Label" BasedOn="{StaticResource HeadersLabel}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AutoMode}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+
+                        <Label Grid.Column="1" Content="PRACA" Width="145" HorizontalAlignment="Left" Height="35">
+                            <Label.Style>
+                                <Style TargetType="Label" BasedOn="{StaticResource OkLabel}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AutoActive}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+
+                        <Label Grid.Column="1" Content="TRYB RĘCZNY"  Width="145" HorizontalAlignment="Left" Height="35">
+                            <Label.Style>
+                                <Style TargetType="Label" BasedOn="{StaticResource HeadersLabel}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ManualMode}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+                    </Grid>
+
+                    <Border BorderBrush="LightSkyBlue" BorderThickness="1" Padding="5" Background="White">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Content="Zlecenie:" Style="{StaticResource ParametersLabel}" Width="75" BorderThickness="1,1,0,1"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CurrentOrderNumber, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="138"/>
+
+                            <Label Grid.Row="1" Grid.Column="0" Content="Typ:" Style="{StaticResource ParametersLabel}" Width="75" BorderThickness="1,1,0,1"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrentOrderType, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="138"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Content="Wymiar:" Style="{StaticResource ParametersLabel}" Width="75" BorderThickness="1,1,0,1"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding CurrentOrderDimensions, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="138" ToolTip="Długość x Szerokość [mm]"/>
+
+                            <Label Grid.Row="3" Grid.Column="0" Content="Wykonano:" Style="{StaticResource ParametersLabel}" Width="75" BorderThickness="1,1,0,1"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CurrentOrderProgress, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="138" Foreground="DarkGreen" FontWeight="Bold"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <GroupBox Grid.Column="2" Header="Ostatnie komunikaty (Taski)" Margin="0,10,0,0" BorderBrush="LightSkyBlue" Foreground="DodgerBlue" FontWeight="Bold">
+                    <ListBox ItemsSource="{Binding EventLogs}" 
+                             Background="White" 
+                             BorderThickness="0" 
+                             Margin="2" 
+                             FontWeight="Normal"
+                             Foreground="#333333"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             FontFamily="Consolas" FontSize="11">
+                    </ListBox>
+                </GroupBox>
+            </Grid>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="-10,15,0,0">
+                <Button Content="Szczegóły zlecenia" Style="{StaticResource StandardButton}" Width="150" Command="{Binding ShowOrderDetailsCommand}"/>
+                <Button Content="Parametry PLC" Style="{StaticResource StandardButton}" Width="130" Command="{Binding ShowPlcParamsCommand}"/>
+                
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,15,0,0">
-                <TextBlock Text="Sztuki: " FontSize="16"/>
-                <TextBlock Text="{Binding PartCounter}" FontSize="16" FontWeight="Bold" Foreground="DarkSlateBlue"/>
-            </StackPanel>
-
-            <Border Grid.Row="0" Grid.RowSpan="4" Background="#CCFFFFFF" CornerRadius="8">
+            <Border Grid.Row="1" Grid.RowSpan="2" Background="#DDFFFFFF" Margin="0,10,0,0">
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Visible"/>
-
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsConnected}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -102,13 +177,7 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-
-                <TextBlock Text="BRAK POŁĄCZENIA" 
-               FontWeight="Bold" 
-               Foreground="Red" 
-               FontSize="20" 
-               HorizontalAlignment="Center" 
-               VerticalAlignment="Center"/>
+                <Label Content="BRAK POŁĄCZENIA Z PLC" Style="{StaticResource NokLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" Height="50" Width="300" FontSize="18" FontWeight="Bold"/>
             </Border>
         </Grid>
     </Border>

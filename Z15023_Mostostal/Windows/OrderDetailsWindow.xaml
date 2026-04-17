@@ -1,0 +1,213 @@
+﻿<Window x:Class="Z25023_Mostostal.Windows.OrderDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Z25023_Mostostal.Windows"
+        mc:Ignorable="d"
+        Title="Szczegóły zlecenia z PLC" Height="820" Width="1200"
+        WindowStartupLocation="CenterOwner" Background="#F0F0F0">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Content="PEŁNA SPECYFIKACJA ZLECENIA" Grid.Row="0" 
+               Style="{StaticResource HeadersLabel}" HorizontalAlignment="Stretch" Height="40" Margin="0,0,0,10"/>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="5">
+                <GroupBox Header="Informacje Ogólne" BorderBrush="DodgerBlue" Margin="0,0,0,15">
+                    <UniformGrid Columns="1"  Margin="5">
+                        <StackPanel Margin="5" Orientation="Horizontal" >
+                            <Label Content="Nr zlecenia (ERP):" ToolTip="Baza danych - NRZLEC" Style="{StaticResource ParametersLabel}" Width="100" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.NRZLEC, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="150"/>
+                            <Label Content="Kolejka zlecenia:" ToolTip="Baza danych - KOLZLEC" Style="{StaticResource ParametersLabel}" Width="100" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.KOLZLEC, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="150"/>
+                            <Label Content="Nr części zlecenia" ToolTip="Baza danych - CZESC" Style="{StaticResource ParametersLabel}" Width="110" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.CZESC}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="30"/>
+                            <Label Content="LP." ToolTip="Baza danych - POZ_WYKWYS" Style="{StaticResource ParametersLabel}" Width="30" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.POZ_WYKWYS}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="30"/>
+                            <Label Content="Typ Kraty:" ToolTip="Baza danych - TYP" Style="{StaticResource ParametersLabel}" Width="70" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.TYP, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="120"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="5" Orientation="Horizontal" >
+                            <Label Content="Sztuk krat (PCS):" ToolTip="Baza danych - SZTKR" Style="{StaticResource ParametersLabel}" Width="110" Margin="0,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.SZTKR}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="80"/>
+                            <Label Content="Sztuk nośnych (BBN):" ToolTip="Baza danych - SZTPLN" Style="{StaticResource ParametersLabel}" Width="125" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.SZTPLN}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="80"/>
+                            <Label Content="Sztuk łączących (CBN):" ToolTip="Baza danych - SZPLL" Style="{StaticResource ParametersLabel}" Width="125" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.SZPLL}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="80"/>
+                        </StackPanel>
+
+                        <StackPanel Margin="5" Orientation="Horizontal" >
+                            <Label Content="Przesyłka dot. paletyzacji:" ToolTip="Baza danych - PRZESYLKA" Style="{StaticResource ParametersLabel}" Width="150" Margin="0,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.PRZESYLKA}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="30"/>
+                            <Label Content="Krotność przesyłki:" ToolTip="Baza danych - FAKTOR" Style="{StaticResource ParametersLabel}" Width="110" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.FAKTOR}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="30"/>
+                            <Label Content="Ilość krat na przesyłkę:" ToolTip="Baza danych - SZTUKPOZ" Style="{StaticResource ParametersLabel}" Width="130" Margin="10,0,0,0" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.SZTUKPOZ}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="30"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </GroupBox>
+
+                <GroupBox Header="Wymiary i Podziałki [mm]" BorderBrush="DodgerBlue" Margin="0,0,0,15">
+                    <WrapPanel Margin="5">
+                        <StackPanel Margin="5" >
+                            <Label Content="Krata" Style="{StaticResource HeadersLabel}" Width="140"  HorizontalContentAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Długość:" ToolTip="Baza danych - DLUGOSC" Style="{StaticResource ParametersLabel}" Width="70" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.DLUGOSC}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Szerokość:" ToolTip="Baza danych - SZEROKOSC" Style="{StaticResource ParametersLabel}" Width="70" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.SZEROKOSC}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Margin="15,5,5,5" >
+                            <Label Content="Płaskownik nośny" Style="{StaticResource HeadersLabel}" Width="180"  HorizontalContentAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Długość (BBL):" ToolTip="Baza danych - DRZECZ" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.DRZECZ}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Wysokość (BBH):" ToolTip="Baza danych - PLASKH" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.PLASKH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Grubość (BBT):" ToolTip="Baza danych - PLASKS" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.PLASKS}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Margin="15,5,5,5" >
+                            <Label Content="Płaskownik łączący" Style="{StaticResource HeadersLabel}" Width="180" HorizontalContentAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Długość (CBL):" ToolTip="Baza danych - SZRZECZ" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.SZRZECZ}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Wysokość (CBH):" ToolTip="Baza danych - HWALC" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.HWALC}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Grubość (CBT):" ToolTip="Baza danych - SWALC" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.SWALC}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <Label Content="Podziałka pomiędzy płaskownikami nośnymi (BBS):" ToolTip="Baza danych - OCZKOH" Style="{StaticResource ParametersLabel}" Width="300" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.OCZKOH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="40" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="5">
+                                <Label Content="Podziałka pomiędzy płaskownikami łączącymi (CBS):" ToolTip="Baza danych - OCZKOL" Style="{StaticResource ParametersLabel}" Width="300" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                <TextBox Text="{Binding Data.OCZKOL}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="40" />
+                            </StackPanel>
+                        </StackPanel>
+                    </WrapPanel>
+                </GroupBox>
+
+                <GroupBox Header="Pola Skrajne" BorderBrush="DodgerBlue" Margin="0,0,0,15">
+                    <WrapPanel Margin="5">
+                        <StackPanel Margin="5">
+                            <Label Content="Lewe (LEF):" ToolTip="Baza danych - PSKRAJSZER" Style="{StaticResource ParametersLabel}" Width="120" BorderThickness="1,1,1,0" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.PSKRAJSZER}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Margin="5">
+                            <Label Content="Prawe (REF):" ToolTip="Baza danych - PSKRAJSZER2" Style="{StaticResource ParametersLabel}" Width="120" BorderThickness="1,1,1,0" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.PSKRAJSZER2}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Margin="5">
+                            <Label Content="Górne (TEF):" ToolTip="Baza danych - PSKRAJDL" Style="{StaticResource ParametersLabel}" Width="120" BorderThickness="1,1,1,0" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.PSKRAJDL}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="120"/>
+                        </StackPanel>
+                        <StackPanel Margin="5">
+                            <Label Content="Dolne (DEF):" ToolTip="Baza danych - PSKRAJDL2" Style="{StaticResource ParametersLabel}" Width="120" BorderThickness="1,1,1,0" HorizontalContentAlignment="Center"/>
+                            <TextBox Text="{Binding Data.PSKRAJDL2}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="120"/>
+                        </StackPanel>
+                    </WrapPanel>
+                </GroupBox>
+
+                <GroupBox Header="Obramowanie" BorderBrush="DodgerBlue" Margin="0,0,0,15">
+                    <StackPanel>
+                        <WrapPanel>
+                            <StackPanel Margin="15,5,5,5" >
+                                <Label Content="Góra" Style="{StaticResource HeadersLabel}" Width="180"  HorizontalContentAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Typ (TFT):" ToolTip="Baza danych - TFT" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFT, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Wysokość (THTH):" ToolTip="Baza danych - THTH" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.THTH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Grubość (TFTF):" ToolTip="Baza danych - TFTF" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFTF}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Margin="15,5,5,5" >
+                                <Label Content="Dół" Style="{StaticResource HeadersLabel}" Width="180"  HorizontalContentAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Typ (TFD):" ToolTip="Baza danych - TFD" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFD, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Wysokość (TFDH):" ToolTip="Baza danych - TFDH" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFDH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Grubość (TFDF):" ToolTip="Baza danych - TFDF" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFDF}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                                </StackPanel>
+                            </StackPanel>
+                            
+                            <StackPanel Margin="15,5,5,5" >
+                                <Label Content="Lewo" Style="{StaticResource HeadersLabel}" Width="180"  HorizontalContentAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Typ (TFL):" ToolTip="Baza danych - TFL" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFL, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Wysokość (TFLH):" ToolTip="Baza danych - TFLH" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFLH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Grubość (TFLF):" ToolTip="Baza danych - TFLF" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFLF}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Margin="15,5,5,5" >
+                                <Label Content="Prawo" Style="{StaticResource HeadersLabel}" Width="180"  HorizontalContentAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Typ (TFR):" ToolTip="Baza danych - TFR" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFR, StringFormat={}{0}}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Wysokość (TFRH):" ToolTip="Baza danych - TFRH" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,0" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFRH}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Grubość (TFRF):" ToolTip="Baza danych - TFRF" Style="{StaticResource ParametersLabel}" Width="110" BorderThickness="1,1,0,1" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding Data.TFRF}" IsReadOnly="True" Style="{StaticResource ParametersTextBox}" Width="70" BorderThickness="1,1,1,1"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </WrapPanel>
+                    </StackPanel>
+                </GroupBox>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="2" Content="Zamknij" Width="100" Height="35" 
+                Style="{StaticResource StandardButton}" HorizontalAlignment="Right" IsCancel="True" Click="Close_Click"/>
+    </Grid>
+</Window>

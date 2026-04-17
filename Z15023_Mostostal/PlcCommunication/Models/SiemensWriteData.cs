@@ -2,10 +2,10 @@
 using System.Runtime.InteropServices;
 using AutomatedSolutions.ASCommStd.SI.S7.Data;
 
-namespace Z15023_Mostostal.PlcCommunication.Models
+namespace Z25023_Mostostal.PlcCommunication.Models
 {
     [StructLayout(LayoutKind.Sequential)]
-    public class SiemensDataWrite : UDT
+    public class SiemensWriteData : UDT
     {
         public Int16 Life;
         public UInt16 Task_Counter;

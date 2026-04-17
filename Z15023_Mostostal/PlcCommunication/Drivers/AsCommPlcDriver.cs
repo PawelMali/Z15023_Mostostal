@@ -6,15 +6,17 @@ using System.Collections.Generic;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using Z15023_Mostostal.PlcCommunication.Models;
+using Z25023_Mostostal.PlcCommunication.Models;
 using SIS7 = AutomatedSolutions.ASCommStd.SI.S7;
 
-namespace Z15023_Mostostal.PlcCommunication.Drivers
+namespace Z25023_Mostostal.PlcCommunication.Drivers
 {
     public class AsCommPlcDriver : IPlcDriver
     {
         private readonly ILogger<AsCommPlcDriver> _logger;
         private readonly PlcConnectionConfig _config;
+
+        public string PlcName => _config.Name; 
 
         public bool HasConfigurationError { get; private set; } = false;
         private bool _isInErrorState = false;
@@ -62,11 +64,11 @@ namespace Z15023_Mostostal.PlcCommunication.Drivers
                 // =========================================================
 
                 // 1. Obszar: ReadData
-                var structRead = new SiemensDataRead();
+                var structRead = new SiemensReadData();
                 RegisterItem("ReadData", _config.MemoryMap.ReadData, structRead.GetStructureLength());
 
                 // 2. Obszar: WriteData
-                var structWrite = new SiemensDataWrite();
+                var structWrite = new SiemensWriteData();
                 RegisterItem("WriteData", _config.MemoryMap.WriteData, structWrite.GetStructureLength());
 
                 // 3. Obszar: ReadOrder / WriteOrder
@@ -74,7 +76,10 @@ namespace Z15023_Mostostal.PlcCommunication.Drivers
                 RegisterItem("ReadOrder", _config.MemoryMap.ReadOrder, structOrder.GetStructureLength());
                 RegisterItem("WriteOrder", _config.MemoryMap.WriteOrder, structOrder.GetStructureLength());
 
-                // Możesz tu łatwo dopisać Results, Config, itd...
+                // 4. Obszar: ReadConfig / WriteConfig
+                var structConfig = new SiemensConfigData();
+                RegisterItem("ReadConfig", _config.MemoryMap.ReadConfig, structConfig.GetStructureLength());
+                RegisterItem("WriteConfig", _config.MemoryMap.WriteConfig, structConfig.GetStructureLength());
             }
             catch (Exception ex)
             {

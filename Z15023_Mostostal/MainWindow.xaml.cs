@@ -8,9 +8,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Z15023_Mostostal.ViewModels;
+using Z25023_Mostostal.ViewModels;
 
-namespace Z15023_Mostostal
+namespace Z25023_Mostostal
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -33,5 +33,14 @@ namespace Z15023_Mostostal
             // Wymusza na całym środowisku WPF rozpoczęcie procedury zamknięcia
             Application.Current.Shutdown();
         }
+
+        private void serviceBn_Click(object sender, RoutedEventArgs e)
+        {
+            //if (serviceStackPanel.Visibility == Visibility.Visible)
+            //    serviceStackPanel.Visibility = Visibility.Hidden;
+            //else
+            //    serviceStackPanel.Visibility = Visibility.Visible;
+        }
+
     }
 }

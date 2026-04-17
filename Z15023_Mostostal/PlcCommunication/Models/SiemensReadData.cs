@@ -2,10 +2,10 @@
 using System.Runtime.InteropServices;
 using AutomatedSolutions.ASCommStd.SI.S7.Data;
 
-namespace Z15023_Mostostal.PlcCommunication.Models
+namespace Z25023_Mostostal.PlcCommunication.Models
 {
     [StructLayout(LayoutKind.Sequential)]
-    public class SiemensDataRead : UDT
+    public class SiemensReadData : UDT
     {
         public Int16 Life;
         public UInt16 Task_Counter;
@@ -34,6 +34,7 @@ namespace Z15023_Mostostal.PlcCommunication.Models
         public Int16 Reserve3;
         public Int16 Reserve4;
         public Int16 Reserve5;
+        public SiemensString20 OrderNumberReq = new SiemensString20();  
     }
 
 }

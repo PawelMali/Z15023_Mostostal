@@ -8,19 +8,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Z25023_Mostostal.Controls
+namespace Z25023_Mostostal.Windows
 {
     /// <summary>
-    /// Logika interakcji dla klasy PlcStatusControl.xaml
+    /// Interaction logic for PlcParamsWindow.xaml
     /// </summary>
-    public partial class PlcStatusControl : UserControl
+    public partial class PlcParamsWindow : Window
     {
-        public PlcStatusControl()
+        public PlcParamsWindow()
         {
             InitializeComponent();
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            // Ta metoda po prostu zamyka aktualne okno
+            this.Close();
         }
     }
 }

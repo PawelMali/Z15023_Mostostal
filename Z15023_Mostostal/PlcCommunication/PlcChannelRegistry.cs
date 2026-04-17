@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Channels;
 
-namespace Z15023_Mostostal.PlcCommunication
+namespace Z25023_Mostostal.PlcCommunication
 {
     public class PlcChannelRegistry
     {

@@ -7,14 +7,20 @@ using System.Configuration;
 using System.Data;
 using System.Threading.Channels;
 using System.Windows;
-using Z15023_Mostostal.PlcCommunication;
-using Z15023_Mostostal.PlcCommunication.Drivers;
-using Z15023_Mostostal.PlcCommunication.Models;
-using Z15023_Mostostal.State;
-using Z15023_Mostostal.Tasks;
-using Z15023_Mostostal.ViewModels;
+using Z25023_Mostostal.PlcCommunication;
+using Z25023_Mostostal.PlcCommunication.Drivers;
+using Z25023_Mostostal.PlcCommunication.Models;
+using Z25023_Mostostal.Services;
+using Z25023_Mostostal.Services.RecipeManager;
+using Z25023_Mostostal.Settings;
+using Z25023_Mostostal.Settings.Security;
+using Z25023_Mostostal.State;
+using Z25023_Mostostal.Tasks.Inbound_PLC_PC;
+using Z25023_Mostostal.Tasks.Outbound_PC_PLC;
+using Z25023_Mostostal.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Z15023_Mostostal
+namespace Z25023_Mostostal
 {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -28,68 +34,147 @@ namespace Z15023_Mostostal
             // Wstępna konfiguracja Serilog
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
+                .Enrich.FromLogContext()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
                 .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
                 .WriteTo.Console()
-                .WriteTo.File("logs/plc_app_log.txt", 
+                .WriteTo.File("logs/System/System_Main.txt", 
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 180,
                 outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
                 shared: true)
+                .WriteTo.Map("PlcName", "System", (plcName, wt) =>
+                {
+                    // Znak '@' ułatwia bezpieczne parsowanie nazw plików (usuwa problematyczne znaki)
+                    wt.File($"logs/{plcName}/{plcName}_log_.txt",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 180,
+                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
+                    shared: true);
+                })
                 .CreateLogger();
 
             try
             {
+
                 // Nowoczesny builder DI, standard w .NET 9/10
                 var builder = Host.CreateApplicationBuilder();
 
-                // Rejestracja Serilog jako domyślnego loggera w aplikacji
-                builder.Services.AddSerilog();
 
-                // Rejestrujemy kontener danych jako jeden na całą aplikację
-                builder.Services.AddSingleton<PlcDataStore>();
+                // ==========================================
+                // A. WARSTWA BAZOWA I USTAWIENIA
+                // ==========================================
 
-                // Rejestrujemy ViewModel dla okna głównego (Singleton, bo mamy jedno okno)
-                builder.Services.AddSingleton<MainViewModel>();
-
-                builder.Services.AddSingleton<PlcChannelRegistry>();
-
-                // Rejestracja UI (Okno główne) jako Singleton
-                builder.Services.AddSingleton<MainWindow>();
-
+                // Rejestracja TimeProvider jako Singleton, aby mieć spójne źródło czasu w całej aplikacji (np. do logów, timeoutów, itp.)
                 builder.Services.AddSingleton(TimeProvider.System);
 
-                // Rejestrujemy fasadę jako Singleton (żyje przez cały czas działania aplikacji)
-                builder.Services.AddSingleton<PlcTaskManager>();
+                // Rejestrujemy klasę, która będzie szyfrować i deszyfrować hasła do bazy danych. Dzięki temu, nawet jeśli ktoś podejrzy nasz plik appsettings.json, hasła będą bezpieczne.
+                builder.Services.AddSingleton<ICryptoService, AesCryptoService>();
 
-                // Rejestrujemy klasę, która będzie bezpiecznie przechowywać referencje do 4 fizycznych sterowników
-                builder.Services.AddSingleton<PlcDriverRegistry>();
+                // Rejestrujemy serwis, który będzie zarządzał odczytem i zapisem ustawień aplikacji (np. połączenia do bazy, ustawienia PLC, itp.). Dzięki niemu, mamy centralne miejsce do zarządzania konfiguracją.
+                builder.Services.AddSingleton<SettingsManagerService>();
+
+                // Rejestrujemy Serilog jako domyślnego loggera w aplikacji, dzięki czemu możemy wstrzykiwać ILogger<T> w dowolnym miejscu i mieć spójne logowanie do konsoli i plików.
+                builder.Services.AddSerilog();
+
+                
+                // ==========================================
+                // B. WARSTWA DANYCH I RECEPTUR (SQL)
+                // ==========================================
+
+                // Rejestrujemy serwis, który będzie bezpiecznie przechowywał w pamięci RAM dane z PLC (np. aktualne zlecenie, parametry procesowe, itp.). Dzięki temu, mamy szybki dostęp do tych danych z różnych miejsc w aplikacji, bez konieczności ciągłego odczytywania ich z PLC.
+                builder.Services.AddSingleton<PlcDataStore>();
+
+                // Rejestrujemy serwis, który będzie zarządzał definicjami parametrów procesowych (100 parametrów dla każdego produktu). Wczytywane z csv przy starcie, trzymane w RAMie, gotowe do szybkiego mapowania na strukturę dla PLC. 
+                builder.Services.AddSingleton<ParameterDefinitionService>();
+
+                // Rejestrujemy serwis, który będzie generował unikalne hashe dla produktów na podstawie ich wymiarów i cech. Dzięki temu, nawet jeśli zlecenia będą miały różne numery, ale identyczne wymiary, będą traktowane jako ten sam produkt.
+                builder.Services.AddSingleton<ProductHashGenerator>();
+
+                // Rejestrujemy repozytorium, które będzie zarządzało zapisem i odczytem receptur (definicji produktów) w lokalnej bazie SQL. Dzięki temu, możemy łatwo zapisywać nowe receptury z PLC (Task 50) i pobierać je przy wysyłaniu zlecenia (Task 10).
+                builder.Services.AddTransient<RecipeRepository>();
+
+                // Rejestrujemy repozytorium, które będzie zarządzało zapisem i odczytem zleceń produkcyjnych w lokalnej bazie SQL. Dzięki temu, możemy mieć historię zleceń, ich statusów, itp., co może być przydatne do raportowania i analizy.
+                builder.Services.AddSingleton<OrderRepository>();
 
 
-                // Rejestrujemy nasze konkretne zadanie. 
-                // Używamy AddTransient, co oznacza, że obiekt zadania powstanie w pamięci 
-                // TYLKO na czas jego wykonania i zaraz potem zostanie usunięty (Garbage Collector).
+                // ==========================================
+                // C. WARSTWA ZADAŃ (TASK ROUTING)
+                // Ruch wychodzący (PC -> PLC)
+                // ==========================================
+                // Rejestrujemy centralny dispatcher zadań wychodzących do PLC. To on będzie odpowiedzialny za przyjmowanie żądań z różnych miejsc w aplikacji (np. Task 10) i kierowanie ich do odpowiednich kanałów komunikacyjnych, które są przypisane do konkretnych PLC. Dzięki temu, logika wysyłania zleceń jest odseparowana od reszty aplikacji i łatwa do zarządzania.
+                builder.Services.AddSingleton<OutboundTaskDispatcher>();
+
+                // Rejestracja konkretnego zadania wysyłającego zlecenie do PLC (Task 10). To zadanie będzie wywoływane z różnych miejsc w aplikacji (np. z UI, z innych serwisów) i będzie odpowiedzialne za przygotowanie danych zlecenia, mapowanie ich na strukturę dla PLC, oraz wysłanie ich do odpowiedniego kanału komunikacyjnego. 
                 builder.Services.AddTransient<Task10_SendNewOrder>();
 
-                // Pobieranie danych połączeniowych z appsettings.json
+
+                // ==========================================
+                // C. WARSTWA ZADAŃ (TASK ROUTING)
+                // Ruch przychodzący (PLC -> PC)
+                // ==========================================
+                // Rejestrujemy centralny router zadań przychodzących z PLC. To on będzie odpowiedzialny za odbieranie sygnałów z maszyn (np. Task 50) i kierowanie ich do odpowiednich handlerów, które są przypisane do konkretnych numerów zadań. Dzięki temu, logika obsługi sygnałów z PLC jest odseparowana i łatwa do zarządzania.
+                builder.Services.AddSingleton<InboundTaskRouter>();
+
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 50 - Zapis Receptury). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce zapisać recepturę. Handler ten będzie odpowiedzialny za odczyt danych z PLC, wygenerowanie hasha produktu, i zapisanie tych danych do lokalnej bazy SQL jako nowa receptura.
+                builder.Services.AddTransient<IInboundTaskHandler, Task50_SaveRecipeHandler>();
+
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 51 - Obsługa Żądania Zlecenia). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce otrzymać dane zlecenia. Handler ten będzie odpowiedzialny za odczyt żądania z PLC, wyszukanie zlecenia w bazie ERP, wygenerowanie hasha produktu, pobranie receptury, i wysłanie tych danych z powrotem do PLC.
+                builder.Services.AddTransient<IInboundTaskHandler, Task51_HandleOrderRequest>();
+
+
+                // ==========================================
+                // D. WARSTWA INTERFEJSU UŻYTKOWNIKA (WPF)
+                // ==========================================
+
+                // Rejestrujemy główny ViewModel aplikacji jako Singleton, ponieważ chcemy mieć spójny stan i logikę biznesową w całej aplikacji, a także łatwy dostęp do niego z różnych miejsc (np. z okna głównego, z innych serwisów, itp.). Dzięki temu, możemy centralnie zarządzać danymi i logiką aplikacji, a UI będzie tylko prezentacją tego stanu.
+                builder.Services.AddSingleton<MainViewModel>();
+
+                // Rejestrujemy główne okno aplikacji jako Singleton, ponieważ chcemy mieć tylko jedną instancję tego okna w całym cyklu życia aplikacji. Dzięki temu, możemy łatwo wstrzykiwać do niego zależności (np. MainViewModel) i mieć pewność, że wszędzie tam, gdzie potrzebujemy odwołać się do głównego okna, będziemy korzystać z tej samej instancji.
+                builder.Services.AddSingleton<MainWindow>();
+
+                // Rejestrujemy ViewModel dla okna ustawień jako Transient, ponieważ chcemy mieć świeżą instancję tego ViewModelu za każdym razem, gdy otwieramy okno ustawień. Dzięki temu, każde otwarcie okna będzie miało niezależny stan i ewentualne zmiany wprowadzone w jednym oknie nie będą wpływać na inne otwarte okna ustawień.
+                builder.Services.AddTransient<SettingsViewModel>();
+
+                // Rejestrujemy okno ustawień jako Transient, ponieważ chcemy mieć świeżą instancję tego okna za każdym razem, gdy użytkownik zdecyduje się otworzyć ustawienia. Dzięki temu, każde otwarcie okna będzie niezależne i nie będzie wpływać na inne otwarte okna ustawień (jeśli użytkownik otworzy kilka razy).
+                builder.Services.AddTransient<SettingsWindow>();
+
+
+                // ==========================================
+                // E. WARSTWA KOMUNIKACJI PLC (PĘTLE W TLE)
+                // ==========================================
+
+                // Rejestrujemy centralny rejestr sterowników PLC. To on będzie bezpiecznie przechowywał referencje do wszystkich fizycznych sterowników (np. AsComm) przypisanych do konkretnych numerów maszyn. Dzięki temu, w dowolnym miejscu w aplikacji, możemy łatwo pobrać sterownik dla konkretnej maszyny i wykonać na nim operacje odczytu/zapisu.
+                builder.Services.AddSingleton<PlcDriverRegistry>();
+
+                // Rejestrujemy centralny rejestr kanałów komunikacyjnych. To on będzie bezpiecznie przechowywał referencje do kanałów (Channel<PlcTaskRequest>) dla każdego PLC, które są używane do wysyłania zadań z aplikacji do maszyn. Dzięki temu, gdy chcemy wysłać zadanie do konkretnej maszyny, możemy łatwo pobrać odpowiedni kanał z tego rejestru i wrzucić tam żądanie zadania.
+                builder.Services.AddSingleton<PlcChannelRegistry>();
+
+
                 var plcConfigs = builder.Configuration
                     .GetSection("PlcConnections")
                     .Get<List<PlcConnectionConfig>>();
 
+                // Rejestrujemy listę konfiguracji PLC jako Singleton, aby była dostępna w całej aplikacji (np. do wyświetlania w UI, do logowania, itp.)
+                builder.Services.AddSingleton(plcConfigs);
+
                 if (plcConfigs != null)
                 {
                     // 2. Rejestracja 4 niezależnych usług, każdej z osobnymi kanałami i konfiguracją
-                    foreach (var config in plcConfigs)
+                    foreach (var configItem in plcConfigs)
                     {
-                        builder.Services.AddHostedService(provider =>
+                        var config = configItem;
+                        builder.Services.AddSingleton<IHostedService>(provider =>
                         {
                             var logger = provider.GetRequiredService<ILogger<PlcWorkerService>>();
                             var timeProvider = provider.GetRequiredService<TimeProvider>();
                             var dataStore = provider.GetRequiredService<PlcDataStore>();
-                            var registry = provider.GetRequiredService<PlcChannelRegistry>();
 
-                            // Pobieramy nasz nowy rejestr sterowników
+                            var channelRegistry = provider.GetRequiredService<PlcChannelRegistry>();
                             var driverRegistry = provider.GetRequiredService<PlcDriverRegistry>();
+
+                            // Pobieramy nasz nowy router dla żądań przychodzących (Task 50+)
+                            var inboundRouter = provider.GetRequiredService<InboundTaskRouter>();
 
                             // Tworzenie unikalnych kanałów dla tej konkretnej instancji PLC
                             var incomingTasks = Channel.CreateUnbounded<PlcTaskRequest>();
@@ -98,18 +183,17 @@ namespace Z15023_Mostostal
 
                             // Rejestrujemy kanał wychodzący w centralnym rejestrze, 
                             // aby nasza logika biznesowa mogła do niego trafić
-                            registry.RegisterChannel(config.Id, outgoingTasks);
+                            channelRegistry.RegisterChannel(config.Id, outgoingTasks);
 
                             // Tworzymy instancję fizycznego sterownika dla danego IP
                             var loggerDriver = provider.GetRequiredService<ILogger<AsCommPlcDriver>>();
                             IPlcDriver asCommDriver = new AsCommPlcDriver(loggerDriver, config);
-
                             // REJESTRUJEMY STEROWNIK w słowniku pod numerem maszyny!
                             driverRegistry.RegisterDriver(config.Id, asCommDriver);
 
                             // Zwracamy gotową usługę dla tego sterownika
                             return new PlcWorkerService(
-                                config, asCommDriver, logger, timeProvider,
+                                config, asCommDriver, logger, inboundRouter, timeProvider,
                                 incomingTasks, completedTasks, outgoingTasks, dataStore);
                         });
                     }
@@ -136,6 +220,10 @@ namespace Z15023_Mostostal
             {
                 // Uruchomienie hosta odpali również wszystkie nasze przyszłe BackgroundServices (PLC)
                 await _host.StartAsync();
+
+                // Wyciągamy serwis z kontenera. To uruchomi jego konstruktor 
+                // i natychmiast wczyta pliki "parameters_X.csv" do RAMu.
+                _host.Services.GetRequiredService<ParameterDefinitionService>();
 
                 // Pobranie głównego okna z kontenera DI i wyświetlenie go
                 var mainWindow = _host.Services.GetRequiredService<MainWindow>();

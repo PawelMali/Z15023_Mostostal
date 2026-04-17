@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Z15023_Mostostal.PlcCommunication.Drivers
+namespace Z25023_Mostostal.PlcCommunication.Drivers
 {
     public interface IPlcDriver : IDisposable
     {
+        string PlcName { get; }
         bool IsConnected { get; }
         bool HasConfigurationError { get; }
 
