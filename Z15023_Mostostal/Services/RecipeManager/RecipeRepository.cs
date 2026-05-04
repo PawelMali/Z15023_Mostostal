@@ -94,11 +94,11 @@ public class RecipeRepository
 
             // Mapowanie pól (zdejmujemy .Value z SiemensString i rzutujemy Single na float/double)
             parameters.Add("@KOLZLEC", plcOrder.KOLZLEC.ToString());
-            parameters.Add("@CZESC", (int)plcOrder.CZESC);
+            parameters.Add("@CZESC", plcOrder.CZESC.ToString());
             parameters.Add("@PRZESYLKA", (int)plcOrder.PRZESYLKA);
-            parameters.Add("@FAKTOR", (int)plcOrder.FAKTOR);
-            parameters.Add("@SZTUKPOZ", (int)plcOrder.SZTUKPOZ);
-            parameters.Add("@POZ_WYKWYS", (int)plcOrder.POZ_WYKWYS);
+            parameters.Add("@FAKTOR", (short)plcOrder.FAKTOR);
+            parameters.Add("@SZTUKPOZ", (double)plcOrder.SZTUKPOZ);
+            parameters.Add("@POZ_WYKWYS", (double)plcOrder.POZ_WYKWYS);
             parameters.Add("@TYP", plcOrder.TYP.ToString());
             parameters.Add("@DLUGOSC", (double)plcOrder.DLUGOSC);
             parameters.Add("@SZEROKOSC", (double)plcOrder.SZEROKOSC);
@@ -114,19 +114,19 @@ public class RecipeRepository
             parameters.Add("@PLASKS", (double)plcOrder.PLASKS_BBT);
             parameters.Add("@HWALC", (double)plcOrder.HWALC_CBH);
             parameters.Add("@SWALC", (double)plcOrder.SWALC_CBT);
-            parameters.Add("@SZTPLN", (int)plcOrder.SZTPLN_BBN);
-            parameters.Add("@SZPLL", (int)plcOrder.SZPLL_CBN);
-            parameters.Add("@SZTKR", (int)plcOrder.SZTKR_PCS);
-            parameters.Add("@TFT", plcOrder.TFT.ToString());
+            parameters.Add("@SZTPLN", (double)plcOrder.SZTPLN_BBN);
+            parameters.Add("@SZPLL", (double)plcOrder.SZPLL_CBN);
+            parameters.Add("@SZTKR", (double)plcOrder.SZTKR_PCS);
+            parameters.Add("@TFT", (int)plcOrder.TFT);
             parameters.Add("@THTH", (double)plcOrder.THTH);
             parameters.Add("@TFTF", (double)plcOrder.TFTF);
-            parameters.Add("@TFD", plcOrder.TFD.ToString());
+            parameters.Add("@TFD", (int)plcOrder.TFD);
             parameters.Add("@TFDH", (double)plcOrder.TFDH);
             parameters.Add("@TFDF", (double)plcOrder.TFDF);
-            parameters.Add("@TFL", plcOrder.TFL.ToString());
+            parameters.Add("@TFL", (int)plcOrder.TFL);
             parameters.Add("@TFLH", (double)plcOrder.TFLH);
             parameters.Add("@TFLF", (double)plcOrder.TFLF);
-            parameters.Add("@TFR", plcOrder.TFR.ToString());
+            parameters.Add("@TFR", (int)plcOrder.TFR);
             parameters.Add("@TFRH", (double)plcOrder.TFRH);
             parameters.Add("@TFRF", (double)plcOrder.TFRF);
 

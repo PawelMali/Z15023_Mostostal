@@ -34,7 +34,8 @@ namespace Z25023_Mostostal.PlcCommunication.Models
         public Int16 Reserve3;
         public Int16 Reserve4;
         public Int16 Reserve5;
-        public SiemensString20 OrderNumberReq = new SiemensString20();  
+        public SiemensString20 OrderNumberReq = new SiemensString20();
+        public SiemensString20 OrderPositionReq = new SiemensString20();
     }
 
 }

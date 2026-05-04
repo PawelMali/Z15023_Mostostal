@@ -33,8 +33,9 @@ public class Task51_HandleOrderRequest : IInboundTaskHandler
     {
         // 1. Pobieramy numer zlecenia ze struktury, którą właśnie odczytał Worker co 100ms
         string requestedOrderNo = statusData.OrderNumberReq.ToString();
+        string requestedOrderPositionNo = statusData.OrderPositionReq.ToString();
 
-        _logger.LogInformation("PLC {PlcId} żąda danych dla zlecenia: {OrderNo}", plcId, requestedOrderNo);
+        _logger.LogInformation("PLC {PlcId} żąda danych dla zlecenia: {OrderNo}, {PositionNo}", plcId, requestedOrderNo, requestedOrderPositionNo);
 
         if (string.IsNullOrWhiteSpace(requestedOrderNo))
         {
@@ -50,7 +51,7 @@ public class Task51_HandleOrderRequest : IInboundTaskHandler
             var hashGen = scope.ServiceProvider.GetRequiredService<ProductHashGenerator>();
 
             // 2. Szukamy zlecenia w bazie ERP (Widok SQL)
-            var orderFromErp = await orderRepo.GetOrderByNumberAsync(requestedOrderNo);
+            var orderFromErp = await orderRepo.GetOrderByNumberAsync(requestedOrderNo, requestedOrderPositionNo);
 
             if (orderFromErp == null)
             {

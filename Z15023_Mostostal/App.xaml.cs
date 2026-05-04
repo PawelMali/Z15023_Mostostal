@@ -122,6 +122,9 @@ namespace Z25023_Mostostal
                 // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 51 - Obsługa Żądania Zlecenia). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce otrzymać dane zlecenia. Handler ten będzie odpowiedzialny za odczyt żądania z PLC, wyszukanie zlecenia w bazie ERP, wygenerowanie hasha produktu, pobranie receptury, i wysłanie tych danych z powrotem do PLC.
                 builder.Services.AddTransient<IInboundTaskHandler, Task51_HandleOrderRequest>();
 
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 52 - Aktualizacja Produkcji). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce zaktualizować postęp produkcji (np. licznik wyprodukowanych sztuk). Handler ten będzie odpowiedzialny za odczyt aktualnego stanu produkcji z PLC, i zapisanie tych danych do lokalnej bazy SQL jako aktualizacja stanu zlecenia.
+                builder.Services.AddTransient<IInboundTaskHandler, Task52_UpdateProductionHandler>();
+
 
                 // ==========================================
                 // D. WARSTWA INTERFEJSU UŻYTKOWNIKA (WPF)

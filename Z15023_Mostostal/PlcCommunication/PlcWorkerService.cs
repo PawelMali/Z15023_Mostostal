@@ -150,6 +150,10 @@ namespace Z25023_Mostostal.PlcCommunication
                             continue;
                         }
 
+                        // Zmienna życia do PLC
+                        _writeBuffer.Life = (short)(DateTime.Now.Second * 10 + DateTime.Now.Millisecond / 100);
+
+
                         // 3.2. ODCZYT WOLNY (co 5 sekund) - AKTUALNE ZLECENIE
                         if (_timeProvider.GetElapsedTime(_lastOrderReadTimestamp).TotalMilliseconds > OrderReadIntervalMs)
                         {
@@ -320,7 +324,10 @@ namespace Z25023_Mostostal.PlcCommunication
                 case 50: _dataStore.AddTaskLog(_plcId, $"Zapisanie parametrów Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId).KOLZLEC.ToString()}]");
                     break;
                 case 51:
-                    _dataStore.AddTaskLog(_plcId, $"Pobranie zlecenia Task[{incomingTaskId}] [{_dataStore.GetData(_plcId).OrderNumberReq.ToString()}]");
+                    _dataStore.AddTaskLog(_plcId, $"Pobranie zlecenia Task[{incomingTaskId}] [{_dataStore.GetData(_plcId).OrderNumberReq.ToString()}; {_dataStore.GetData(_plcId).OrderPositionReq.ToString()}]");
+                    break;
+                case 52:
+                    _dataStore.AddTaskLog(_plcId, $"Aktualizacja produkcji Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
                     break;
                 default:
                     _dataStore.AddTaskLog(_plcId, $"Nie zdefiniowany Task[{incomingTaskId}] [X]");
@@ -339,6 +346,9 @@ namespace Z25023_Mostostal.PlcCommunication
                     break;
                 case 51:
                     _dataStore.AddTaskLog(_plcId, $"Pobranie zlecenia Task[{incomingTaskId}] [{statusText}]");
+                    break;
+                case 52:
+                    _dataStore.AddTaskLog(_plcId, $"Aktualizacja produkcji Task[{incomingTaskId}] [{statusText}]");
                     break;
                 default:
                     _dataStore.AddTaskLog(_plcId, $"Nie zdefiniowany Task[{incomingTaskId}] [{statusText}]");

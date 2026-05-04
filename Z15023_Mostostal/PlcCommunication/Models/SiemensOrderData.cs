@@ -8,11 +8,11 @@ namespace Z25023_Mostostal.PlcCommunication.Models
     public class SiemensOrderData : UDT
     {
         public SiemensString KOLZLEC = new SiemensString(); //Nr. Zlecenia
-        public Int16 CZESC;     //Numer częsci zlecenia
+        public SiemensString CZESC = new SiemensString();     //Numer częsci zlecenia
         public Int16 PRZESYLKA; //Przesyłka dotycząca paletyzacji
         public Int16 FAKTOR;    //Krotnośc przesyłki -  ilość sztuk paletyzacji
-        public Int16 SZTUKPOZ;  //Ilość krat na przesyłkę
-        public Int16 POZ_WYKWYS;    //LP.
+        public Single SZTUKPOZ;  //Ilość krat na przesyłkę
+        public Single POZ_WYKWYS;    //LP.
         public SiemensString TYP = new SiemensString(); //Typ kraty
         public Single DLUGOSC;   //Długość kraty
         public Single SZEROKOSC; //Szerokość kraty
@@ -28,21 +28,21 @@ namespace Z25023_Mostostal.PlcCommunication.Models
         public Single PLASKS_BBT;   //Grubość płaskownika noścnego - BBT
         public Single HWALC_CBH;    //Wysokość płaskownika łączącego - CBH
         public Single SWALC_CBT;    //Grubość płaskownika łączącego - CBT
-        public Int16 SZTPLN_BBN;    //Ilość płaskowników nośnych - BBN
-        public Int16 SZPLL_CBN;     //Ilość płaskowników łaczących - CBN
-        public Int16 SZTKR_PCS;     //Sztuk krat do wykonania - PCS
-        public SiemensString TFT = new SiemensString(); //Typ obramowania góra - TFT
-        public Single THTH;     //Wysokość obramowania góra - THTH
-        public Single TFTF;     //Grubość obramowania góra - TFTF
-        public SiemensString TFD = new SiemensString(); //Typ obramowania dół - TFD
-        public Single TFDH;     //Wysokość obramowania dół - TFDH
-        public Single TFDF;     //Grubość obramowania dół - TFDF
-        public SiemensString TFL = new SiemensString(); //Typ obramowania lewo - TFL
-        public Single TFLH;     //Wysokość obramowania lewo - TFLH
-        public Single TFLF;     //Grubość obramowania lewo - TFLF
-        public SiemensString TFR = new SiemensString(); //Typ obramowania prawo - TFR
-        public Single TFRH;     //Wysokość obramowania prawo - TFRH 
-        public Single TFRF;     //Grubość obramowania prawo - TFRF
+        public Single SZTPLN_BBN;    //Ilość płaskowników nośnych - BBN
+        public Single SZPLL_CBN;     //Ilość płaskowników łaczących - CBN
+        public Single SZTKR_PCS;     //Sztuk krat do wykonania - PCS
+        public Int16 TFT;   //Typ obramowania góra - TFT
+        public Single THTH; //Wysokość obramowania góra - THTH
+        public Single TFTF; //Grubość obramowania góra - TFTF
+        public Int16 TFD;   //Typ obramowania dół - TFD
+        public Single TFDH; //Wysokość obramowania dół - TFDH
+        public Single TFDF; //Grubość obramowania dół - TFDF
+        public Int16 TFL;   //Typ obramowania lewo - TFL
+        public Single TFLH; //Wysokość obramowania lewo - TFLH
+        public Single TFLF; //Grubość obramowania lewo - TFLF
+        public Int16 TFR;   //Typ obramowania prawo - TFR
+        public Single TFRH; //Wysokość obramowania prawo - TFRH 
+        public Single TFRF; //Grubość obramowania prawo - TFRF
         public SiemensString NRZLEC = new SiemensString();  //Numer zlecenia ??
 
     }
