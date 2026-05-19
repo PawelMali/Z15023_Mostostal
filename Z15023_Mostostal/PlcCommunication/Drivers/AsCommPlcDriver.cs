@@ -80,6 +80,10 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
                 var structConfig = new SiemensConfigData();
                 RegisterItem("ReadConfig", _config.MemoryMap.ReadConfig, structConfig.GetStructureLength());
                 RegisterItem("WriteConfig", _config.MemoryMap.WriteConfig, structConfig.GetStructureLength());
+
+                // 5. Obszar: WriteCuttingData (Pętla zgeneralizowana dla prasy i noża)
+                var structCutting = new SiemensCuttingData();
+                RegisterItem("WriteCuttingData", _config.MemoryMap.WriteCuttingData, structCutting.GetStructureLength());
             }
             catch (Exception ex)
             {

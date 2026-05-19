@@ -70,4 +70,28 @@ public class OrderRepository(SettingsManagerService _settings)
             PLC_ID = plcId
         });
     }
+
+    public async Task InsertCompletedShipmentAsync(ProductionOrder order, int plcId)
+    {
+        string connectionString = _settings.GetSqlConnectionString();
+
+        using var connection = new SqlConnection(connectionString);
+
+        string sql = @"
+            INSERT INTO [dbo].[PROZAP_PRZESYLKA] 
+            (KOLZLEC, CZESC, PRZESYLKA, FAKTOR, NRZLEC, PLC_ID)
+            VALUES 
+            (@KOLZLEC, @CZESC, @PRZESYLKA, @FAKTOR, @NRZLEC, @PLC_ID)";
+
+        // Dapper automatycznie zmapuje właściwości obiektu anonimowego na parametry SQL
+        await connection.ExecuteAsync(sql, new
+        {
+            KOLZLEC = order.KOLZLEC,
+            CZESC = order.CZESC,
+            PRZESYLKA = order.PRZESYLKA,
+            FAKTOR = 1,
+            NRZLEC = order.NRZLEC,
+            PLC_ID = plcId
+        });
+    }
 }

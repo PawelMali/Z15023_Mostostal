@@ -41,13 +41,15 @@ namespace Z25023_Mostostal.ViewModels
 
         private readonly Action<int> _openOrderDetailsAction;
         private readonly Action<int> _openPlcParamsAction;
+        private readonly Action<int> _openCuttingDataAction;
 
-        public PlcViewModel(int plcId, PlcDataStore dataStore, Action<int> openOrderDetails, Action<int> openPlcParams)
+        public PlcViewModel(int plcId, PlcDataStore dataStore, Action<int> openOrderDetails, Action<int> openPlcParams, Action<int> openCuttingData)
         {
             _plcId = plcId;
             _dataStore = dataStore;
             _openOrderDetailsAction = openOrderDetails;
             _openPlcParamsAction = openPlcParams;
+            _openCuttingDataAction = openCuttingData;
 
             // Wczytujemy to, co już było w historii logów dla tego PLC 
             foreach (var log in _dataStore.GetRecentLogs(plcId))
@@ -65,6 +67,9 @@ namespace Z25023_Mostostal.ViewModels
 
         [RelayCommand]
         private void ShowPlcParams() => _openPlcParamsAction?.Invoke(PlcId);
+
+        [RelayCommand]
+        private void ShowCuttingData() => _openCuttingDataAction?.Invoke(PlcId);
 
 
         // --- METODA AKTUALIZUJĄCA DANE (Wywoływana np. z MainViewModel co 500ms) ---

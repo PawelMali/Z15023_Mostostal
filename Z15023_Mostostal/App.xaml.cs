@@ -125,6 +125,12 @@ namespace Z25023_Mostostal
                 // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 52 - Aktualizacja Produkcji). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce zaktualizować postęp produkcji (np. licznik wyprodukowanych sztuk). Handler ten będzie odpowiedzialny za odczyt aktualnego stanu produkcji z PLC, i zapisanie tych danych do lokalnej bazy SQL jako aktualizacja stanu zlecenia.
                 builder.Services.AddTransient<IInboundTaskHandler, Task52_UpdateProductionHandler>();
 
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 53 - Zakończenie Przesyłki). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że zakończyła produkcję całej przesyłki. Handler ten będzie odpowiedzialny za odczyt danych z PLC, mapowanie ich na model zlecenia, i zapisanie tych danych do lokalnej bazy SQL jako zakończenie zlecenia (np. zapis do tabeli CompletedShipments).
+                builder.Services.AddTransient<IInboundTaskHandler, Task53_FinishShipmentHandler>();
+
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 60 - Przeliczenie i optymalizacja pętli cięcia). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce przeliczyć parametry cięcia. Handler ten będzie odpowiedzialny za odczyt aktualnych parametrów z PLC, uruchomienie silnika matematycznego do optymalizacji cięcia, i zapisanie wyników z powrotem do PLC.
+                builder.Services.AddTransient<IInboundTaskHandler, Task60_CalculateCuttingHandler>();
+
 
                 // ==========================================
                 // D. WARSTWA INTERFEJSU UŻYTKOWNIKA (WPF)

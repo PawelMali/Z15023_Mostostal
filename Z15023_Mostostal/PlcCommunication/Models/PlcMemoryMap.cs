@@ -14,5 +14,6 @@ namespace Z25023_Mostostal.PlcCommunication.Models
         public string WriteResults { get; set; } = string.Empty;
         public string ReadConfig { get; set; } = string.Empty;
         public string WriteConfig { get; set; } = string.Empty;
+        public string WriteCuttingData { get; set; } = string.Empty;
     }
 }

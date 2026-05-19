@@ -53,6 +53,7 @@
                 
                 <Rectangle x:Name="rec2" Width="15" Fill="LightSkyBlue"/>
                 <Button Content="Ustawienia" Grid.ColumnSpan="2" Margin="0,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSettingsCommand}" />
+                <Button Content="Symulacja Cięcia" Grid.ColumnSpan="2" Margin="0,100,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSimulationCommand}" />
                 <Button Content="Recepty" Grid.ColumnSpan="2" Margin="0,50,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSettingsCommand}" />
                 <Button Content="Odśwież zlecenia" Grid.ColumnSpan="2" Margin="0,620,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding RefreshOrdersCommand}" />
             </Grid>

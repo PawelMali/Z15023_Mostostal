@@ -329,6 +329,12 @@ namespace Z25023_Mostostal.PlcCommunication
                 case 52:
                     _dataStore.AddTaskLog(_plcId, $"Aktualizacja produkcji Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
                     break;
+                case 53:
+                    _dataStore.AddTaskLog(_plcId, $"Zakończenie przesyłki Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
+                    break;
+                case 60:
+                    _dataStore.AddTaskLog(_plcId, $"Przeliczenie profilu cięcia Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
+                    break;
                 default:
                     _dataStore.AddTaskLog(_plcId, $"Nie zdefiniowany Task[{incomingTaskId}] [X]");
                     break;
@@ -349,6 +355,12 @@ namespace Z25023_Mostostal.PlcCommunication
                     break;
                 case 52:
                     _dataStore.AddTaskLog(_plcId, $"Aktualizacja produkcji Task[{incomingTaskId}] [{statusText}]");
+                    break;
+                case 53:
+                    _dataStore.AddTaskLog(_plcId, $"Zakończenie przesyłki Task[{incomingTaskId}] [{statusText}]");
+                    break;
+                case 60:
+                    _dataStore.AddTaskLog(_plcId, $"Przeliczenie profilu cięcia Task[{incomingTaskId}] [{statusText}]");
                     break;
                 default:
                     _dataStore.AddTaskLog(_plcId, $"Nie zdefiniowany Task[{incomingTaskId}] [{statusText}]");
