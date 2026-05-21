@@ -53,7 +53,10 @@ public class Task60_CalculateCuttingHandler : IInboundTaskHandler
             bool isSerration = currentOrder.TYP.ToString().Trim() == "S";
 
             // 3. Uruchomienie bezpiecznej symulacji matematycznej w tle
-            var machineConfig = new MachineConfig(EnableSerration: isSerration);
+            var machineConfig = MachineConfig.Load() with
+            {
+                EnableSerration = isSerration
+            };
             var detailConfig = new DetailConfig(length, marginLeft, marginRight, pitch);
             var logic = new ProductionLogic(machineConfig);
 
@@ -100,6 +103,7 @@ public class Task60_CalculateCuttingHandler : IInboundTaskHandler
                 var step = steadyStateSteps[j];
                 cuttingData.steps[j].Lp = (short)(j + 1);
                 cuttingData.steps[j].Delta = (float)step.StepDisplacement; // Przesuw w pętli
+                cuttingData.steps[j].CutPosition = (float)step.CutTargetX;
                 cuttingData.steps[j].Punch = (int)step.PunchesMask;        // Maska bitowa stempli
                 cuttingData.steps[j].Cut = (short)(step.IsCutActive ? 1 : 0);
             }

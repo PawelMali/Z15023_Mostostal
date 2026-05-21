@@ -45,6 +45,7 @@ public partial class CuttingDataWindow : Window
             {
                 Lp = s.Lp,
                 Delta = s.Delta,
+                CutPosition = s.CutPosition,
                 Punch = s.Punch,
                 Cut = s.Cut
             })

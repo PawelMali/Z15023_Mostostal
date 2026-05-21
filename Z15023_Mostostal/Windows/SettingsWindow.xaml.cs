@@ -47,4 +47,5 @@ public partial class SettingsWindow : Window
             vm.LocalNewPassword = LocalDbPasswordBox.Password;
         }
     }
+
 }

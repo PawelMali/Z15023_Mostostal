@@ -332,6 +332,9 @@ namespace Z25023_Mostostal.PlcCommunication
                 case 53:
                     _dataStore.AddTaskLog(_plcId, $"Zakończenie przesyłki Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
                     break;
+                case 54:
+                    _dataStore.AddTaskLog(_plcId, $"Pobranie konfiguracji z bazy Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
+                    break;
                 case 60:
                     _dataStore.AddTaskLog(_plcId, $"Przeliczenie profilu cięcia Task[{incomingTaskId}] [{_dataStore.GetCurrentOrder(_plcId)?.KOLZLEC.ToString()}]");
                     break;
@@ -358,6 +361,9 @@ namespace Z25023_Mostostal.PlcCommunication
                     break;
                 case 53:
                     _dataStore.AddTaskLog(_plcId, $"Zakończenie przesyłki Task[{incomingTaskId}] [{statusText}]");
+                    break;
+                case 54:
+                    _dataStore.AddTaskLog(_plcId, $"Pobranie konfiguracji z bazy Task[{incomingTaskId}] [{statusText}]");
                     break;
                 case 60:
                     _dataStore.AddTaskLog(_plcId, $"Przeliczenie profilu cięcia Task[{incomingTaskId}] [{statusText}]");

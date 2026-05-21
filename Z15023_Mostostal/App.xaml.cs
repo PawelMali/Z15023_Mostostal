@@ -131,6 +131,9 @@ namespace Z25023_Mostostal
                 // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 60 - Przeliczenie i optymalizacja pętli cięcia). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce przeliczyć parametry cięcia. Handler ten będzie odpowiedzialny za odczyt aktualnych parametrów z PLC, uruchomienie silnika matematycznego do optymalizacji cięcia, i zapisanie wyników z powrotem do PLC.
                 builder.Services.AddTransient<IInboundTaskHandler, Task60_CalculateCuttingHandler>();
 
+                // Rejestracja konkretnego handlera dla zadania przychodzącego z PLC (Task 54 - Pobranie konfiguracji dla aktualnego zlecenia). To zadanie będzie wywoływane, gdy maszyna wyśle sygnał, że chce pobrać parametry technologiczne dla aktualnego zlecenia. Handler ten będzie odpowiedzialny za odczyt danych z PLC, wygenerowanie hasha produktu, pobranie receptury z bazy SQL, i wysłanie tych danych z powrotem do PLC.
+                builder.Services.AddTransient<IInboundTaskHandler, Task54_ReloadConfigHandler>();
+
 
                 // ==========================================
                 // D. WARSTWA INTERFEJSU UŻYTKOWNIKA (WPF)

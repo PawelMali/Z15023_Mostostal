@@ -11,6 +11,7 @@ namespace Z25023_Mostostal.PlcCommunication.Models
     {
         public Int16 Lp; //Nr. kroku
         public Single Delta;  //Przesunięcie
+        public Single CutPosition;  //Pozycja noża
         public int Punch; // Maska stempli
         public Int16 Cut; // 1 - cięcie aktywne, 0 - cięcie nieaktywne
     }

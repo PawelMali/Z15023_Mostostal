@@ -71,6 +71,11 @@ namespace Z25023_Mostostal.ViewModels
         [RelayCommand]
         private void ShowCuttingData() => _openCuttingDataAction?.Invoke(PlcId);
 
+        [RelayCommand]
+        private void ClearLog()
+        {     EventLogs.Clear();
+        }
+
 
         // --- METODA AKTUALIZUJĄCA DANE (Wywoływana np. z MainViewModel co 500ms) ---
         public void RefreshData(SiemensReadData plcData, SiemensOrderData currentOrder)
