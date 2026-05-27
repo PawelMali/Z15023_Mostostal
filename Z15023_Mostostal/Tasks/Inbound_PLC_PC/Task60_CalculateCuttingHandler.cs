@@ -49,15 +49,24 @@ public class Task60_CalculateCuttingHandler : IInboundTaskHandler
             double marginLeft = Math.Round(currentOrder.PSKRAJDL_TEF, 2);
             double marginRight = Math.Round(currentOrder.PSKRAJDL2_DEF, 2);
 
-            // Dokładne sprawdzenie trybu seratacji (tylko gdy typ to dokładnie "S")
-            bool isSerration = currentOrder.TYP.ToString().Trim() == "S";
+            // Dokładne sprawdzenie trybu seratacji (tylko gdy typ zawiera "X5" lub "X7")
+            string typ = currentOrder.TYP?.ToString()?.Trim() ?? "";
+
+            Z25023_Mostostal_Cięcie.Core.CuttingType cuttingType = 
+                    (currentOrder.TFT == 1 || currentOrder.TFT == 3 || currentOrder.TFT == 4 || currentOrder.TFT == 5)
+                    ? Z25023_Mostostal_Cięcie.Core.CuttingType.P
+                    : Z25023_Mostostal_Cięcie.Core.CuttingType.T;
+
+
+            bool isSerration = typ.Contains("X5") || typ.Contains("X7");
+
 
             // 3. Uruchomienie bezpiecznej symulacji matematycznej w tle
             var machineConfig = MachineConfig.Load() with
             {
                 EnableSerration = isSerration
             };
-            var detailConfig = new DetailConfig(length, marginLeft, marginRight, pitch);
+            var detailConfig = new DetailConfig(length, marginLeft, marginRight, pitch, cuttingType);
             var logic = new ProductionLogic(machineConfig);
 
             int optimalChunks;

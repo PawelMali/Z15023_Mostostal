@@ -142,8 +142,29 @@ namespace Z25023_Mostostal.ViewModels
         [RelayCommand]
         public async Task RefreshOrdersAsync()
         {
-            var data = await _orderRepository.GetPendingOrdersAsync();
-            Orders = new ObservableCollection<ProductionOrder>(data);
+            try
+            {
+                // Dobrą praktyką jest poinformowanie UI, że operacja trwa (np. wyświetlenie kręciołka), 
+                // ale w najprostszej formie skupmy się na złapaniu błędu:
+                var data = await _orderRepository.GetPendingOrdersAsync();
+                Orders = new ObservableCollection<ProductionOrder>(data);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+            {
+                // Obsługa specyficzna dla błędu bazy danych SQL
+                MessageBox.Show($"Brak połączenia z bazą danych ERP.\n\nSzczegóły: {sqlEx.Message}",
+                                "Błąd połączenia SQL",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                // Fallback na wszelkie inne nieprzewidziane błędy (np. brak sieci, błędny connection string)
+                MessageBox.Show($"Nie udało się odświeżyć zleceń.\n\nSzczegóły: {ex.Message}",
+                                "Błąd krytyczny",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+            }
         }
 
         [RelayCommand]
@@ -207,14 +228,14 @@ namespace Z25023_Mostostal.ViewModels
             double marginLeft = Math.Round(orderData.PSKRAJDL_TEF, 2);
             double marginRight = Math.Round(orderData.PSKRAJDL2_DEF, 2);
 
-            // Sprawdzamy czy w typie znajduje się litera "S" (lub "s"). 
-            // StringComparison.OrdinalIgnoreCase zapewnia poprawne działanie niezależnie od wielkości liter.
-            string orderType = orderData.TYP.ToString();
-            bool isSerration = orderType.Contains("S", StringComparison.OrdinalIgnoreCase);
+            // Dokładne sprawdzenie trybu seratacji (tylko gdy typ zawiera "X5" lub "X7")
+            string orderType = orderData.TYP?.ToString()?.Trim() ?? "";
+            bool isSerration = orderType.Contains("X5") || orderType.Contains("X7");
+            int cuttingType = orderData.TFT;
 
             // Wywołujemy okno z projektu Z25023_Mostostal_Cięcie
             var simWindow = new Z25023_Mostostal_Cięcie.MainWindow(
-                length, pitch, marginLeft, marginRight, isSerration);
+                length, pitch, marginLeft, marginRight, isSerration, cuttingType);
 
             // Ustawiamy okno główne jako właściciela, by ładnie wyświetliło się na środku
             simWindow.Owner = Application.Current.MainWindow;

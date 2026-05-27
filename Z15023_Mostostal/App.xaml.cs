@@ -54,6 +54,8 @@ namespace Z25023_Mostostal
                 })
                 .CreateLogger();
 
+            RegisterGlobalExceptionHandlers();
+
             try
             {
 
@@ -222,6 +224,63 @@ namespace Z25023_Mostostal
                 Log.Fatal(ex, "Błąd podczas inicjalizacji Hosta aplikacji");
             }
         }
+
+
+        /// <summary>
+        /// Metoda rejestrująca potrójną tarczę ochronną przed crashami aplikacji.
+        /// </summary>
+        private void RegisterGlobalExceptionHandlers()
+        {
+            // 1. Wyjątki w głównym wątku interfejsu użytkownika (WPF Dispatcher Thread)
+            // To tutaj trafi błąd, gdy klikniesz przycisk "Odśwież zlecenia" przy braku bazy.
+            this.DispatcherUnhandledException += (sender, e) =>
+            {
+                // Logujemy krytyczny błąd do pliku za pomocą Seriloga
+                Log.Fatal(e.Exception, "Krytyczny nieobsłużony wyjątek w wątku UI (Dispatcher)");
+
+                // Wyświetlamy operatorowi bezpieczny i przejrzysty komunikat
+                MessageBox.Show(
+                    $"Wystąpił nieoczekiwany błąd działania interfejsu.\n\n" +
+                    $"Szczegóły błędu: {e.Exception.Message}\n\n" +
+                    $"Aplikacja spróbuje kontynuować działanie. Jeśli problem będzie się powtarzał, skontaktuj się z serwisem.",
+                    "Błąd Aplikacji (UI)",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                // KLUCZOWE: Oznaczamy wyjątek jako obsłużony. 
+                // Dzięki temu WPF NIE UBIJE procesu aplikacji i okno główne nie zniknie!
+                e.Handled = true;
+            };
+
+            // 2. Wyjątki w wątkach tła (ThreadPool, asynchroniczne wątki spoza Dispatchera)
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                Exception? ex = e.ExceptionObject as Exception;
+                Log.Fatal(ex, "Krytyczny nieobsłużony wyjątek w domenie aplikacji (Wątek w tle). Czy aplikacja kończy działanie: {IsTerminating}", e.IsTerminating);
+
+                MessageBox.Show(
+                    $"Wystąpił krytyczny błąd systemowy w tle maszynowym.\n\n" +
+                    $"Szczegóły: {ex?.Message}\n\n" +
+                    $"Aplikacja musi zostać zamknięta.",
+                    "Krytyczny Błąd Systemu",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Stop);
+
+                // W przypadku AppDomain runtime i tak zazwyczaj ubije proces (IsTerminating = true), 
+                // ale dzięki temu zdarzeniu zdążyliśmy zapisać pełny StackTrace w logach!
+            };
+
+            // 3. Wyjątki w nieobserwowanych zadaniach asynchronicznych (Task / async/await)
+            // Wywoływane przez Garbage Collector, gdy porzucony Task zgłosi błąd, którego nikt nie przechwycił przez 'await'.
+            TaskScheduler.UnobservedTaskException += (sender, e) =>
+            {
+                Log.Error(e.Exception, "Nieobserwowany wyjątek w zadaniu asynchronicznym (Task Scheduler)");
+
+                // Zabezpieczamy potok i zapobiegamy eskalacji błędu do awarii procesu
+                e.SetObserved();
+            };
+        }
+
 
         // Nadpisujemy moment startu aplikacji
         protected override async void OnStartup(StartupEventArgs e)

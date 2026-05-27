@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:Z25023_Mostostal.Controls" 
         WindowState="Maximized"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1900">
+        Title="Z25023 Mostostal - INTROL PRO-ZAP Sp. z o.o." Height="1000" Width="1900">
     <Grid>
 
 
@@ -83,14 +83,14 @@
                 </DataGrid.Columns>-->
             </DataGrid>
 
-            <Button Grid.Row="4" Grid.Column="0"
+            <!--<Button Grid.Row="4" Grid.Column="0"
                 Content="Wyślij Zlecenie" 
                 Command="{Binding SendSelectedOrderToPlcCommand}" 
                 Width="220" Height="40" 
                 Margin="0,55,0,55" 
                 HorizontalAlignment="Left"
                 FontSize="14" FontWeight="Bold"
-                Cursor="Hand"/>
+                Cursor="Hand"/>-->
         </Grid>
 
 
