@@ -53,9 +53,9 @@ public class Task60_CalculateCuttingHandler : IInboundTaskHandler
             string typ = currentOrder.TYP?.ToString()?.Trim() ?? "";
 
             Z25023_Mostostal_Cięcie.Core.CuttingType cuttingType = 
-                    (currentOrder.TFT == 1 || currentOrder.TFT == 3 || currentOrder.TFT == 4 || currentOrder.TFT == 5)
-                    ? Z25023_Mostostal_Cięcie.Core.CuttingType.P
-                    : Z25023_Mostostal_Cięcie.Core.CuttingType.T;
+                    (currentOrder.TFT.ToString() == "Bednarka" )
+                    ? Z25023_Mostostal_Cięcie.Core.CuttingType.T
+                    : Z25023_Mostostal_Cięcie.Core.CuttingType.P;
 
 
             bool isSerration = typ.Contains("X5") || typ.Contains("X7");

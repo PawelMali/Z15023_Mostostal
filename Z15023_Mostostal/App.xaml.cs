@@ -6,6 +6,7 @@ using Serilog;
 using System.Configuration;
 using System.Data;
 using System.Threading.Channels;
+using System.Threading;
 using System.Windows;
 using Z25023_Mostostal.PlcCommunication;
 using Z25023_Mostostal.PlcCommunication.Drivers;
@@ -28,6 +29,11 @@ namespace Z25023_Mostostal
     public partial class App : Application
     {
         private IHost? _host;
+
+        // Unikalna nazwa Mutexu dla Twojej aplikacji. 
+        // Prefiks "Global\" sprawia, że zabezpieczenie działa dla wszystkich użytkowników systemu (Terminal Services / RDP).
+        private static Mutex? _mutex;
+        private const string MutexName = @"Global\Z25023_Mostostal_Unique_Mutex_Key_2026";
 
         public App()
         {
@@ -285,6 +291,26 @@ namespace Z25023_Mostostal
         // Nadpisujemy moment startu aplikacji
         protected override async void OnStartup(StartupEventArgs e)
         {
+            // Sprawdzenie, czy instancja aplikacji już działa
+            _mutex = new Mutex(true, MutexName, out bool isNewInstance);
+
+            if (!isNewInstance)
+            {
+                // Jeśli to NIE jest nowa instancja, informujemy użytkownika i zamykamy aplikację
+                MessageBox.Show(
+                    "Aplikacja jest już uruchomiona w systemie.",
+                    "Informacja",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                _mutex.Dispose();
+                _mutex = null;
+
+                Application.Current.Shutdown();
+                return;
+            }
+
+            // Jeśli aplikacja uruchamia się po raz pierwszy, kontynuujemy standardowy proces startowy
             base.OnStartup(e);
 
             if (_host != null)
@@ -334,6 +360,20 @@ namespace Z25023_Mostostal
                 {
                     _host?.Dispose();
                     Log.CloseAndFlush(); // Bezpieczny zapis logów na dysk
+
+                    // Zwalnianie i usuwanie Mutexu przed bezwzględnym zabiciem procesu
+                    if (_mutex != null)
+                    {
+                        try
+                        {
+                            _mutex.ReleaseMutex();
+                        }
+                        catch (ObjectDisposedException) { }
+                        catch (ApplicationException) { } // Gdy wątek nie był właścicielem mutexu
+
+                        _mutex.Dispose();
+                        _mutex = null;
+                    }
 
                     // BEZWZGLĘDNE ZABICIE PROCESU
                     // Zostanie wykonane z wątku w tle, natychmiast zabijając całą aplikację

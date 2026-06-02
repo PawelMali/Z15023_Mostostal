@@ -31,6 +31,9 @@ namespace Z25023_Mostostal.ViewModels
         private readonly IServiceProvider _serviceProvider;
         private readonly OrderRepository _orderRepository;
 
+        public string Order { get; set; }
+        public string OrderPosition { get; set; }
+
         [ObservableProperty] private ObservableCollection<ProductionOrder> _orders = new();
         [ObservableProperty] private ProductionOrder? _selectedOrder;
 
@@ -146,7 +149,7 @@ namespace Z25023_Mostostal.ViewModels
             {
                 // Dobrą praktyką jest poinformowanie UI, że operacja trwa (np. wyświetlenie kręciołka), 
                 // ale w najprostszej formie skupmy się na złapaniu błędu:
-                var data = await _orderRepository.GetPendingOrdersAsync();
+                var data = await _orderRepository.GetPendingOrdersAsync(Order, OrderPosition);
                 Orders = new ObservableCollection<ProductionOrder>(data);
             }
             catch (Microsoft.Data.SqlClient.SqlException sqlEx)
@@ -231,7 +234,10 @@ namespace Z25023_Mostostal.ViewModels
             // Dokładne sprawdzenie trybu seratacji (tylko gdy typ zawiera "X5" lub "X7")
             string orderType = orderData.TYP?.ToString()?.Trim() ?? "";
             bool isSerration = orderType.Contains("X5") || orderType.Contains("X7");
-            int cuttingType = orderData.TFT;
+
+            int cuttingType = 1;
+            if (orderData.TFT.ToString() == "Bednarka")
+                cuttingType = 2;
 
             // Wywołujemy okno z projektu Z25023_Mostostal_Cięcie
             var simWindow = new Z25023_Mostostal_Cięcie.MainWindow(

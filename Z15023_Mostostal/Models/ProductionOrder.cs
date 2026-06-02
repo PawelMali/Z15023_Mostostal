@@ -31,16 +31,16 @@ public class ProductionOrder
     public double SZTPLN { get; set; } //Ilość płaskowników nośnych - BBN
     public double SZPLL { get; set; }  //Ilość płaskowników łaczących - CBN
     public double SZTKR { get; set; }  //Sztuk krat do wykonania - PCS
-    public int TFT { get; set; }         //Typ obramowania góra - TFT
+    public string TFT { get; set; } = string.Empty;        //Typ obramowania góra - TFT
     public double THTH { get; set; }    //Wysokość obramowania góra - THTH
     public double TFTF { get; set; }    //Grubość obramowania góra - TFTF
-    public int TFD { get; set; }         //Typ obramowania dół - TFD
+    public string TFD { get; set; } = string.Empty;        //Typ obramowania dół - TFD
     public double TFDH { get; set; }    //Wysokość obramowania dół - TFDH
     public double TFDF { get; set; }    //Grubość obramowania dół - TFDF
-    public int TFL { get; set; }         //Typ obramowania lewo - TFL
+    public string TFL { get; set; } = string.Empty;        //Typ obramowania lewo - TFL
     public double TFLH { get; set; }    //Wysokość obramowania lewo - TFLH
     public double TFLF { get; set; }    //Grubość obramowania lewo - TFLF
-    public int TFR { get; set; }         //Typ obramowania prawo - TFR
+    public string TFR { get; set; } = string.Empty;       //Typ obramowania prawo - TFR
     public double TFRH { get; set; }    //Wysokość obramowania prawo - TFRH 
     public double TFRF { get; set; }    //Grubość obramowania prawo - TFRF
     public string NRZLEC { get; set; } = string.Empty;  //Numer zlecenia ??
@@ -74,16 +74,16 @@ public class ProductionOrder
         siemensOrderData.SZTPLN_BBN = (short)SZTPLN;
         siemensOrderData.SZPLL_CBN = (short)SZPLL;
         siemensOrderData.SZTKR_PCS = (short)SZTKR;
-        siemensOrderData.TFT = (short)TFT;
+        siemensOrderData.TFT.SetString(TFT);
         siemensOrderData.THTH = (float)THTH;
         siemensOrderData.TFTF = (float)TFTF;
-        siemensOrderData.TFD = (short)TFD;
+        siemensOrderData.TFD.SetString(TFD);
         siemensOrderData.TFDH = (float)TFDH;
         siemensOrderData.TFDF = (float)TFDF;
-        siemensOrderData.TFL = (short)TFL;
+        siemensOrderData.TFL.SetString(TFL);
         siemensOrderData.TFLH = (float)TFLH;
         siemensOrderData.TFLF = (float)TFLF;
-        siemensOrderData.TFR = (short)TFR;
+        siemensOrderData.TFR.SetString(TFR);
         siemensOrderData.TFRH = (float)TFRH;
         siemensOrderData.TFRF = (float)TFRF;
         siemensOrderData.NRZLEC.SetString(NRZLEC);
@@ -117,16 +117,16 @@ public class ProductionOrder
         SZTPLN = Math.Round(siemensOrderData.SZTPLN_BBN, 2);
         SZPLL = Math.Round(siemensOrderData.SZPLL_CBN, 2);
         SZTKR = Math.Round(siemensOrderData.SZTKR_PCS, 2);
-        TFT = siemensOrderData.TFT;
+        TFT = siemensOrderData.TFT.ToString();
         THTH = Math.Round(siemensOrderData.THTH, 2);
         TFTF = Math.Round(siemensOrderData.TFTF, 2);
-        TFD = siemensOrderData.TFD;
+        TFD = siemensOrderData.TFD.ToString();
         TFDH = Math.Round(siemensOrderData.TFDH, 2);
         TFDF = Math.Round(siemensOrderData.TFDF, 2);
-        TFL = siemensOrderData.TFL;
+        TFL = siemensOrderData.TFL.ToString();
         TFLH = Math.Round(siemensOrderData.TFLH, 2);
         TFLF = Math.Round(siemensOrderData.TFLF, 2);
-        TFR = siemensOrderData.TFR;
+        TFR = siemensOrderData.TFR.ToString();
         TFRH = Math.Round(siemensOrderData.TFRH, 2);
         TFRF = Math.Round(siemensOrderData.TFRF, 2);
         NRZLEC = siemensOrderData.NRZLEC.ToString();

@@ -117,16 +117,16 @@ public class RecipeRepository
             parameters.Add("@SZTPLN", (double)plcOrder.SZTPLN_BBN);
             parameters.Add("@SZPLL", (double)plcOrder.SZPLL_CBN);
             parameters.Add("@SZTKR", (double)plcOrder.SZTKR_PCS);
-            parameters.Add("@TFT", (int)plcOrder.TFT);
+            parameters.Add("@TFT", plcOrder.TFT.ToString());
             parameters.Add("@THTH", (double)plcOrder.THTH);
             parameters.Add("@TFTF", (double)plcOrder.TFTF);
-            parameters.Add("@TFD", (int)plcOrder.TFD);
+            parameters.Add("@TFD", plcOrder.TFD.ToString());
             parameters.Add("@TFDH", (double)plcOrder.TFDH);
             parameters.Add("@TFDF", (double)plcOrder.TFDF);
-            parameters.Add("@TFL", (int)plcOrder.TFL);
+            parameters.Add("@TFL", plcOrder.TFL.ToString());
             parameters.Add("@TFLH", (double)plcOrder.TFLH);
             parameters.Add("@TFLF", (double)plcOrder.TFLF);
-            parameters.Add("@TFR", (int)plcOrder.TFR);
+            parameters.Add("@TFR", plcOrder.TFR.ToString());
             parameters.Add("@TFRH", (double)plcOrder.TFRH);
             parameters.Add("@TFRF", (double)plcOrder.TFRF);
 

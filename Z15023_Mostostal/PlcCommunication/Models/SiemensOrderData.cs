@@ -31,16 +31,16 @@ namespace Z25023_Mostostal.PlcCommunication.Models
         public Single SZTPLN_BBN;    //Ilość płaskowników nośnych - BBN
         public Single SZPLL_CBN;     //Ilość płaskowników łaczących - CBN
         public Single SZTKR_PCS;     //Sztuk krat do wykonania - PCS
-        public Int16 TFT;   //Typ obramowania góra - TFT
+        public SiemensString TFT = new SiemensString();    //Typ obramowania góra - TFT
         public Single THTH; //Wysokość obramowania góra - THTH
         public Single TFTF; //Grubość obramowania góra - TFTF
-        public Int16 TFD;   //Typ obramowania dół - TFD
+        public SiemensString TFD = new SiemensString();    //Typ obramowania dół - TFD
         public Single TFDH; //Wysokość obramowania dół - TFDH
         public Single TFDF; //Grubość obramowania dół - TFDF
-        public Int16 TFL;   //Typ obramowania lewo - TFL
+        public SiemensString TFL = new SiemensString();    //Typ obramowania lewo - TFL
         public Single TFLH; //Wysokość obramowania lewo - TFLH
         public Single TFLF; //Grubość obramowania lewo - TFLF
-        public Int16 TFR;   //Typ obramowania prawo - TFR
+        public SiemensString TFR = new SiemensString();    //Typ obramowania prawo - TFR
         public Single TFRH; //Wysokość obramowania prawo - TFRH 
         public Single TFRF; //Grubość obramowania prawo - TFRF
         public SiemensString NRZLEC = new SiemensString();  //Numer zlecenia ??

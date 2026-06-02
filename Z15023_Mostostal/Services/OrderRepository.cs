@@ -10,17 +10,31 @@ namespace Z25023_Mostostal.Services;
 
 public class OrderRepository(SettingsManagerService _settings)
 {
-    public async Task<IEnumerable<ProductionOrder>> GetPendingOrdersAsync()
+    public async Task<IEnumerable<ProductionOrder>> GetPendingOrdersAsync(string orderNumber, string orderPositionNumber)
     {
         string connectionString = _settings.GetSqlConnectionString();
         string viewName = _settings.CurrentConfig.Database.OrdersViewName;
 
         using var connection = new SqlConnection(connectionString);
 
-        // Pobieramy wszystkie rekordy z widoku zdefiniowanego w ustawieniach
-        string query = $"SELECT * FROM {viewName}";
+        // Bazowe zapytanie, które zawsze wymaga numeru zlecenia
+        string query = $"SELECT TOP (50) * FROM {viewName} WHERE KOLZLEC = @OrderNo";
 
-        return await connection.QueryAsync<ProductionOrder>(query);
+        // Budujemy obiekt parametrów dynamicznych Dappera
+        var parameters = new DynamicParameters();
+        parameters.Add("OrderNo", orderNumber);
+
+        // Jeśli pozycja została przekazana i nie jest pusta, doklejamy czysty warunek
+        if (!string.IsNullOrWhiteSpace(orderPositionNumber))
+        {
+            query += " AND POZ_WYKWYS = @OrderPositionNo";
+            parameters.Add("OrderPositionNo", orderPositionNumber);
+        }
+
+        // Na koniec dodajemy sortowanie
+        query += " ORDER BY POZ_WYKWYS";
+
+        return await connection.QueryAsync<ProductionOrder>(query, parameters);
     }
 
     public async Task<ProductionOrder?> GetOrderByNumberAsync(string orderNumber, string orderPositionNumber)
@@ -53,9 +67,9 @@ public class OrderRepository(SettingsManagerService _settings)
         ELSE
         BEGIN
             INSERT INTO [dbo].[PROZAP_POZYCJA] 
-            (KOLZLEC, CZESC, PRZESYLKA, SZTUKPOZ, POZ_WYKWYS, NRZLEC, PLC_ID)
+            (KOLZLEC, CZESC, PRZESYLKA,FAKTOR, SZTUKPOZ, POZ_WYKWYS, NRZLEC, PLC_ID)
             VALUES 
-            (@KOLZLEC, @CZESC, @PRZESYLKA, @SZTUKPOZ, @POZ_WYKWYS, @NRZLEC, @PLC_ID)
+            (@KOLZLEC, @CZESC, @PRZESYLKA, @FAKTOR, @SZTUKPOZ, @POZ_WYKWYS, @NRZLEC, @PLC_ID)
         END";
 
         // Wykorzystujemy obiekty anonimowe Dappera do przekazania parametrów
@@ -64,6 +78,7 @@ public class OrderRepository(SettingsManagerService _settings)
             KOLZLEC = order.KOLZLEC,
             CZESC = order.CZESC, 
             PRZESYLKA = order.PRZESYLKA,
+            FAKTOR = order.FAKTOR,
             SZTUKPOZ = currentProductionCounter,
             POZ_WYKWYS = order.POZ_WYKWYS,
             NRZLEC = order.NRZLEC,

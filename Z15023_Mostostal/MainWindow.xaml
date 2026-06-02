@@ -56,6 +56,10 @@
                 <Button Content="Symulacja Cięcia" Grid.ColumnSpan="2" Margin="0,50,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSimulationCommand}" />
 
                 <Button Content="Odśwież zlecenia" Grid.ColumnSpan="2" Margin="0,620,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding RefreshOrdersCommand}" />
+                <TextBlock Text="Zlecenie:" Grid.ColumnSpan="2" Margin="20,680,0,0" VerticalAlignment="Top" />
+                <TextBox Text="{Binding Order, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" Margin="20,700,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Width="170" />
+                <TextBlock Text="Pozycja Zlecenia:" Grid.ColumnSpan="2" Margin="20,750,0,0" VerticalAlignment="Top" />
+                <TextBox Text="{Binding OrderPosition, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" Margin="20,770,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="4" Width="170"/>
             </Grid>
 
             <UniformGrid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Columns="2" Rows="2" Background="#FFDFDFDF" Margin="0,0,0,0">
