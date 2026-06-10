@@ -20,6 +20,7 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
 
         public bool HasConfigurationError { get; private set; } = false;
         private bool _isInErrorState = false;
+        private bool _isInitialized = false;
 
         // Obiekty ASComm (Tworzone raz)
         private SIS7.Net.Channel? _channel;
@@ -118,6 +119,12 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
 
         public async Task<bool> ConnectAsync()
         {
+            // LENIWA INICJALIZACJA WYKONYWANA W TLE
+            //if (!_isInitialized)
+            //{
+            //    await Task.Run(() => InitializeAsComm());
+            //}
+
             if (_isConnected) return true;
 
             try

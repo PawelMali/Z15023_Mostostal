@@ -54,8 +54,8 @@ public class ProductionOrder
         siemensOrderData.CZESC.SetString(CZESC);
         siemensOrderData.PRZESYLKA = (short)PRZESYLKA;
         siemensOrderData.FAKTOR = (short)FAKTOR;
-        siemensOrderData.SZTUKPOZ = (short)SZTUKPOZ;
-        siemensOrderData.POZ_WYKWYS = (short)POZ_WYKWYS;
+        siemensOrderData.SZTUKPOZ = (float)SZTUKPOZ;
+        siemensOrderData.POZ_WYKWYS = (float)POZ_WYKWYS;
         siemensOrderData.TYP.SetString(TYP);
         siemensOrderData.DLUGOSC = (float)DLUGOSC;
         siemensOrderData.SZEROKOSC = (float)SZEROKOSC;
@@ -71,9 +71,9 @@ public class ProductionOrder
         siemensOrderData.PLASKS_BBT = (float)PLASKS;
         siemensOrderData.HWALC_CBH = (float)HWALC;
         siemensOrderData.SWALC_CBT = (float)SWALC;
-        siemensOrderData.SZTPLN_BBN = (short)SZTPLN;
-        siemensOrderData.SZPLL_CBN = (short)SZPLL;
-        siemensOrderData.SZTKR_PCS = (short)SZTKR;
+        siemensOrderData.SZTPLN_BBN = (float)SZTPLN;
+        siemensOrderData.SZPLL_CBN = (float)SZPLL;
+        siemensOrderData.SZTKR_PCS = (float)SZTKR;
         siemensOrderData.TFT.SetString(TFT);
         siemensOrderData.THTH = (float)THTH;
         siemensOrderData.TFTF = (float)TFTF;

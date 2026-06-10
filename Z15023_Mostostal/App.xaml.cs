@@ -46,6 +46,8 @@ namespace Z25023_Mostostal
                 .WriteTo.Console()
                 .WriteTo.File("logs/System/System_Main.txt", 
                 rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 10_000_000,
+                rollOnFileSizeLimit: true,
                 retainedFileCountLimit: 180,
                 outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
                 shared: true)
@@ -54,6 +56,8 @@ namespace Z25023_Mostostal
                     // Znak '@' ułatwia bezpieczne parsowanie nazw plików (usuwa problematyczne znaki)
                     wt.File($"logs/{plcName}/{plcName}_log_.txt",
                     rollingInterval: RollingInterval.Day,
+                    fileSizeLimitBytes: 10_000_000,
+                    rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 180,
                     outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
                     shared: true);
