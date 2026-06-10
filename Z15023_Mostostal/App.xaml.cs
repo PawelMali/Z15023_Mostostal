@@ -44,13 +44,15 @@ namespace Z25023_Mostostal
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
                 .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
                 .WriteTo.Console()
-                .WriteTo.File("logs/System/System_Main.txt", 
-                rollingInterval: RollingInterval.Day,
-                fileSizeLimitBytes: 10_000_000,
-                rollOnFileSizeLimit: true,
-                retainedFileCountLimit: 180,
-                outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
-                shared: true)
+                .WriteTo.Logger(lc => lc
+                .Filter.ByExcluding(le => le.Properties.ContainsKey("PlcName"))
+                .WriteTo.File("logs/System/System_Main.txt",
+                    rollingInterval: RollingInterval.Day,
+                    fileSizeLimitBytes: 10_000_000,
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: 180,
+                    outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] | {Message:lj}{NewLine}{Exception}",
+                    shared: true))
                 .WriteTo.Map("PlcName", "System", (plcName, wt) =>
                 {
                     // Znak '@' ułatwia bezpieczne parsowanie nazw plików (usuwa problematyczne znaki)
@@ -284,9 +286,25 @@ namespace Z25023_Mostostal
             // Wywoływane przez Garbage Collector, gdy porzucony Task zgłosi błąd, którego nikt nie przechwycił przez 'await'.
             TaskScheduler.UnobservedTaskException += (sender, e) =>
             {
-                Log.Error(e.Exception, "Nieobserwowany wyjątek w zadaniu asynchronicznym (Task Scheduler)");
+                // Sprawdzamy, czy wyjątek bazowy lub wewnętrzny to SocketException związany z przerwaniem operacji We/Wy
+                var baseException = e.Exception.GetBaseException();
 
-                // Zabezpieczamy potok i zapobiegamy eskalacji błędu do awarii procesu
+                if (baseException is System.Net.Sockets.SocketException socketEx && (socketEx.ErrorCode == 995 || socketEx.SocketErrorCode == System.Net.Sockets.SocketError.OperationAborted))
+                {
+                    // Wyciszamy logowanie - to wewnętrzny utracony task biblioteki komunikacyjnej
+                    e.SetObserved();
+                    return;
+                }
+
+                if (baseException is OperationCanceledException)
+                {
+                    // Anulowane operacje sieciowe z gniazd w tle również wyciszamy
+                    e.SetObserved();
+                    return;
+                }
+
+                // Wszystkie inne poważne błędy asynchroniczne logujemy standardowo
+                Log.Error(e.Exception, "Nieobserwowany wyjątek w zadaniu asynchronicznym (Task Scheduler)");
                 e.SetObserved();
             };
         }

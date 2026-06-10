@@ -22,6 +22,8 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
         private bool _isInErrorState = false;
         private bool _isInitialized = false;
 
+        private int _consecutiveErrors = 0;
+
         // Obiekty ASComm (Tworzone raz)
         private SIS7.Net.Channel? _channel;
         private SIS7.Device? _device;
@@ -130,16 +132,17 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
             try
             {
                 // Wymuszenie testowego odczytu bloku wejściowego (z Twojego oryginału)
-                await Task.Run(() =>
-                {
+                //await Task.Run(() =>
+              //  {
                     if (_items.TryGetValue("ReadData", out var testItem))
                     {
                         testItem.Read();
                     }
-                });
+               // });
 
                 _isConnected = true;
                 HasConfigurationError = false;
+                _consecutiveErrors = 0;
 
                 if (_isInErrorState)
                 {
@@ -151,19 +154,24 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
             }
             catch (Exception ex)
             {
+                _consecutiveErrors++;
                 // Sprawdzamy, czy to błąd brakującego obiektu/DB
                 if (ex.Message.Contains("Object does not exist") || ex.Message.Contains("0x0000000a")
                     || ex.Message.Contains("Address does not exist") || ex.Message.Contains("0x00000005"))
                 {
-                    _logger.LogCritical("BŁĄD KONFIGURACJI: Pamięć na PLC {Ip} nie istnieje! ({Msg}). Zatrzymano połączenie.", _config.IpAddress, ex.Message);
+                    if (_consecutiveErrors <= 3)
+                    {
+                        _logger.LogCritical("BŁĄD KONFIGURACJI ({Count}/3): Pamięć na PLC {Ip} nie istnieje! ({Msg}). Zatrzymano połączenie.", _consecutiveErrors, _config.IpAddress, ex.Message);
+                    }
                     HasConfigurationError = true;
                 }
                 else
                 {
                     // Logujemy tylko, jeśli to pierwszy błąd z serii
-                    if (!_isInErrorState)
+                    if (_consecutiveErrors <= 3)
                     {
-                        _logger.LogError("Utracono połączenie z PLC {Ip}: {Msg}", _config.IpAddress, ex.Message);
+                        _logger.LogError("Błąd połączenia ({Count}/3) z PLC {Ip}: {Msg}", _consecutiveErrors, _config.IpAddress, ex.Message);
+                    
                         _isInErrorState = true;
                     }
                 }
@@ -186,22 +194,37 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
             try
             {
                 T resultData = new T();
-                await Task.Run(() =>
-                {
+                //await Task.Run(() =>
+                //{
                     item.Read();
                     item.GetStructuredValues(resultData);
-                });
+                //});
                 return resultData;
             }
             catch (Exception ex)
             {
-                _isConnected = false;
-                if (!_isInErrorState)
                 {
-                    _logger.LogWarning("Utracono komunikację przy odczycie {Area} ({Ip}): {Msg}", areaName, _config.IpAddress, ex.Message);
+                    // Sprawdzamy czy dany blok danych (np. DB dla ReadOrder) istnieje na sterowniku
+                    if (ex.Message.Contains("Object does not exist") || ex.Message.Contains("0x0000000a")
+                        || ex.Message.Contains("Address does not exist") || ex.Message.Contains("0x00000005")
+                        || ex.Message.Contains("beyond the CPU's address range"))
+                    {
+                        _logger.LogCritical("KRYTYCZNY BŁĄD KONFIGURACJI: Obszar '{Area}' na PLC {Ip} jest poza zakresem lub nie istnieje! {Msg}", areaName, _config.IpAddress, ex.Message);
+                        HasConfigurationError = true;
+                        _isConnected = false;
+                        return null;
+                    }
+
+                    _isConnected = false;
+                    _consecutiveErrors++;
+
+                    if (_consecutiveErrors <= 3)
+                    {
+                        _logger.LogWarning("Utracono komunikację przy odczycie ({Count}/3) {Area} ({Ip}): {Msg}", _consecutiveErrors, areaName, _config.IpAddress, ex.Message);
+                    }
                     _isInErrorState = true;
+                    return null;
                 }
-                return null;
             }
         }
 
@@ -211,26 +234,42 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
 
             if (!_items.TryGetValue(areaName, out var item))
             {
-                _logger.LogError("Próba zapisu do niezarejestrowanego obszaru: {Area}", areaName);
+                if (_consecutiveErrors <= 3)
+                {
+                    _logger.LogError("Próba zapisu do niezarejestrowanego obszaru: {Area}", areaName);
+                }
                 return false;
             }
 
             try
             {
-                await Task.Run(() =>
-                {
+                //await Task.Run(() =>
+                //{
                     item.Write(data);
-                });
+                //});
                 return true;
             }
             catch (Exception ex)
             {
-                _isConnected = false;
-                if (!_isInErrorState)
+                // Sprawdzamy błąd zakresu/obecności DB również przy zapisie
+                if (ex.Message.Contains("Object does not exist") || ex.Message.Contains("0x0000000a")
+                    || ex.Message.Contains("Address does not exist") || ex.Message.Contains("0x00000005")
+                    || ex.Message.Contains("beyond the CPU's address range"))
                 {
-                    _logger.LogWarning("Utracono komunikację przy zapisie {Area} ({Ip}): {Msg}", areaName, _config.IpAddress, ex.Message);
-                    _isInErrorState = true;
+                    _logger.LogCritical("KRYTYCZNY BŁĄD KONFIGURACJI: Zapis do obszaru '{Area}' na PLC {Ip} niemożliwy - brak bloku/zakresu! {Msg}", areaName, _config.IpAddress, ex.Message);
+                    HasConfigurationError = true;
+                    _isConnected = false;
+                    return false;
                 }
+
+                _isConnected = false;
+                _consecutiveErrors++;
+
+                if (_consecutiveErrors <= 3)
+                {
+                    _logger.LogWarning("Utracono komunikację przy zapisie ({Count}/3) {Area} ({Ip}): {Msg}", _consecutiveErrors, areaName, _config.IpAddress, ex.Message);
+                }
+                _isInErrorState = true;
                 return false;
             }
         }
@@ -238,11 +277,12 @@ namespace Z25023_Mostostal.PlcCommunication.Drivers
         private void HandleAsyncError(string source, string message)
         {
             _isConnected = false;
-            if (!_isInErrorState)
+            if (_consecutiveErrors <= 3)
             {
-                _logger.LogError("Błąd ASComm [{Source}] dla {Ip}: {Msg}", source, _config.IpAddress, message);
-                _isInErrorState = true;
+                _logger.LogError("Błąd ASComm [{Source}] ({Count}/3) dla {Ip}: {Msg}", source, _consecutiveErrors, _config.IpAddress, message);
             }
+            _isInErrorState = true;
+            
         }
 
         public void Dispose()
