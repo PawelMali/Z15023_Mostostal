@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using Z25023_Mostostal.Models;
 
@@ -51,8 +53,10 @@ public class ProductHashGenerator
             order.TFRF.ToString("0.00", format)
         );
 
+        string NormalizedFingerprintData = NormalizeText(fingerprintData);
+
         // 2. Hashowanie ciągu
-        byte[] bytes = Encoding.UTF8.GetBytes(fingerprintData);
+        byte[] bytes = Encoding.UTF8.GetBytes(NormalizedFingerprintData);
         byte[] hash = SHA256.HashData(bytes);
 
         // 3. Konwersja do czytelnego, krótkiego formatu HEX (64 znaki)
@@ -98,8 +102,53 @@ public class ProductHashGenerator
             plcOrder.TFRF.ToString("0.00", format)
         );
 
-        byte[] bytes = Encoding.UTF8.GetBytes(fingerprintData);
+        string NormalizedFingerprintData = NormalizeText(fingerprintData);
+
+        byte[] bytes = Encoding.UTF8.GetBytes(NormalizedFingerprintData);
         byte[] hash = SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
     }
+
+
+    public static string NormalizeText(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // małe litery
+        string result = input.ToLowerInvariant();
+
+        // ręczna zamiana polskich znaków
+        result = result
+            .Replace('ą', 'a')
+            .Replace('ć', 'c')
+            .Replace('ę', 'e')
+            .Replace('ł', 'l')
+            .Replace('ń', 'n')
+            .Replace('ó', 'o')
+            .Replace('ś', 's')
+            .Replace('ź', 'z')
+            .Replace('ż', 'z');
+
+        // usunięcie pozostałych znaków diakrytycznych
+        string normalized = result.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+
+        foreach (char c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        result = sb.ToString().Normalize(NormalizationForm.FormC);
+
+        // pozostaw tylko standardowe znaki:
+        // litery, cyfry, spacje oraz najczęściej używane separatory
+        result = Regex.Replace(result, @"[^a-z0-9|\-_. ]", "");
+
+        return result;
+    }
+
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,6 +25,7 @@ namespace Z25023_Mostostal
 
             // Magia MVVM: Przypisujemy ViewModel do DataContextu okna
             DataContext = viewModel;
+
         }
 
         protected override void OnClosed(EventArgs e)
@@ -42,5 +44,23 @@ namespace Z25023_Mostostal
             //    serviceStackPanel.Visibility = Visibility.Visible;
         }
 
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "Czy na pewno chcesz zamknąć aplikację?",
+                "Potwierdzenie",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            base.OnClosing(e);
+
+        }
     }
 }

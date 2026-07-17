@@ -196,6 +196,17 @@ namespace Z25023_Mostostal.ViewModels
         }
 
         [RelayCommand]
+        private void OpenAbout()
+        {
+            // Pobieramy nowe okno z kontenera DI
+            var aboutWindow = _serviceProvider.GetRequiredService<AboutWindow>();
+
+            // Otwieramy okno (zablokuje główne okno do czasu zamknięcia)
+            aboutWindow.Owner = Application.Current.MainWindow;
+            aboutWindow.ShowDialog();
+        }
+
+        [RelayCommand]
         private void OpenSimulation()
         {
             // Pobieramy zlecenia dla maszyny 1

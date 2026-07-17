@@ -54,6 +54,7 @@
                 <Rectangle x:Name="rec2" Width="15" Fill="LightSkyBlue"/>
                 <Button Content="Ustawienia" Grid.ColumnSpan="2" Margin="0,0,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSettingsCommand}" />
                 <Button Content="Symulacja Cięcia" Grid.ColumnSpan="2" Margin="0,50,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenSimulationCommand}" />
+                <Button Content="O programie" Grid.ColumnSpan="2" Margin="0,100,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding OpenAboutCommand}" />
 
                 <Button Content="Odśwież zlecenia" Grid.ColumnSpan="2" Margin="0,620,0,0" HorizontalAlignment="Left"  VerticalAlignment="Top" Height="50" Width="200" Style="{StaticResource MenuButton}" Command="{Binding RefreshOrdersCommand}" />
                 <TextBlock Text="Zlecenie:" Grid.ColumnSpan="2" Margin="20,680,0,0" VerticalAlignment="Top" />
@@ -75,18 +76,626 @@
             
             <DataGrid Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Orders}" 
           SelectedItem="{Binding SelectedOrder}" 
-          AutoGenerateColumns="True" 
+          AutoGenerateColumns="False" 
           IsReadOnly="True"
           SelectionMode="Single" Margin="0,0,0,0" Grid.RowSpan="2">
-                <!--<DataGrid.Columns>
-                    <DataGridTextColumn Header="Nr Zlecenia" Binding="{Binding KOLZLEC}"/>
-                    <DataGridTextColumn Header="Typ" Binding="{Binding TYP}"/>
-                    <DataGridTextColumn Header="Długość" Binding="{Binding DLUGOSC}"/>
-                    <DataGridTextColumn Header="Szerokość" Binding="{Binding SZEROKOSC}"/>
-                    <DataGridTextColumn Header="Sztuk" Binding="{Binding SZTUKPOZ}"/>
-                </DataGrid.Columns>-->
+
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                    </Style>
+                </DataGrid.CellStyle>
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Binding="{Binding KOLZLEC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Nr. zlecenia" Foreground="DarkSlateGray" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="KOLZLEC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Numer zlecenia"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding CZESC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Część" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="CZESC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Numer części zlecenia"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PRZESYLKA}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Nr. przesyłki" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PRZESYLKA" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Przesyłka dotycząca paletyzacji"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding FAKTOR}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                            <Run Text="-" Foreground="DodgerBlue" FontWeight="Bold"/>
+                            <LineBreak/>
+                                <Run Text="FAKTOR" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Krotność przesyłki, ile sztuk paletyzacji"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZTUKPOZ}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="-" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZTUKPOZ" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Ilośc krat na przesyłkę"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding POZ_WYKWYS}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="LP." Foreground="DarkSlateGray" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="POZ_WYKWYS" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Numer pozycji zlecenia"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TYP}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Typ kraty" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TYP" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip">
+                                    <Setter.Value>
+                                        <TextBlock>
+                                            K-Krata
+                                            <LineBreak/>
+                                            O-Obramowana / N-nieobramowana
+                                            <LineBreak/>
+                                            P-Prasowana / Z-Zgrzewana
+                                        </TextBlock>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding DLUGOSC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Długość kraty" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="DLUGOSC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Długość kraty"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZEROKOSC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="Szerokość kraty" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZEROKOSC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Szerokość kraty"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding DRZECZ}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="BBL" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="DRZECZ" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Długość płaskownika nośnego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZRZECZ}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="CBL" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZRZECZ" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Długość płaskownika łączącego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding OCZKOH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="BBS" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="OCZKOH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Podziałka pomiędzy płaskownikami nośnymi"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding OCZKOL}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="CBS" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="OCZKOL" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Podziałka pomiędzy płaskownikami łączącymi"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PSKRAJSZER}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="LEF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PSKRAJSZER" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Pole skrajne lewe - płaskownik łączący"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PSKRAJSZER2}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="REF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PSKRAJSZER2" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Pole skrajne prawe - płaskownik łączący"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PSKRAJDL}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TEF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PSKRAJDL" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Pole skrajne górne - płaskownik nośny"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PSKRAJDL2}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="DEF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PSKRAJDL2" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Pole skrajne dolne - płaskownik nośny"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PLASKH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="BBH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PLASKH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość płaskownika nośnego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding PLASKS}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="BBT" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="PLASKS" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość płaskownika nośnego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding HWALC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="CBH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="HWALC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość płaskownika łączącego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SWALC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="CBT" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SWALC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość płaskownika łączącego"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZTPLN}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="BBN" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZTPLN" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Ilość płaskowników nośnych w zleceniu"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZPLL}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="CBN" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZPLL" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Ilość płaskowników łączących w zleceniu"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding SZTKR}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="PCS" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="SZTKR" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Ilość krat do wykonania"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFT}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFT" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFT" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Typ obramowania - góra"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding THTH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="THTH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="THTH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość obramowania - góra"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFTF}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFTF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFTF" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość obramowania - góra"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFD}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFD" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFD" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Typ obramowania - dół"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFDH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFDH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFDH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość obramowania - dół"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFDF}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFDF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFDF" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość obramowania - dół"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFL}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFL" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFL" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Typ obramowania - lewo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFLH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFLH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFLH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość obramowania - lewo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFLF}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFLF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFLF" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość obramowania - lewo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFR}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFR" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFR" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Typ obramowania - prawo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFRH}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFRH" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFRH" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Wysokość obramowania - prawo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding TFRF}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="TFRF" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="TFRF" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Grubość obramowania - prawo"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Binding="{Binding NRZLEC}" Width="Auto">
+                        <DataGridTextColumn.Header>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap">
+                                <Run Text="-" Foreground="DodgerBlue" FontWeight="Bold"/>
+                                <LineBreak/>
+                                <Run Text="NRZLEC" Foreground="#888" FontStyle="Italic"/>
+                            </TextBlock>
+                        </DataGridTextColumn.Header>
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="ToolTip" Value="Dodatkowy parametr zlecenia Polimex"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <!--Nr Zlecenia &#x0a; Nr Zlecenia Nr Zlecenia -->
+                </DataGrid.Columns>
             </DataGrid>
 
+            
+            
             <!--<Button Grid.Row="4" Grid.Column="0"
                 Content="Wyślij Zlecenie" 
                 Command="{Binding SendSelectedOrderToPlcCommand}" 

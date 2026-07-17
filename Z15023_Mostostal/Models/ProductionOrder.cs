@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using Z25023_Mostostal.PlcCommunication.Models;
 
 namespace Z25023_Mostostal.Models;
@@ -50,13 +52,13 @@ public class ProductionOrder
     {
         SiemensOrderData siemensOrderData = new SiemensOrderData();
 
-        siemensOrderData.KOLZLEC.SetString(KOLZLEC);
-        siemensOrderData.CZESC.SetString(CZESC);
+        siemensOrderData.KOLZLEC.SetString(NormalizeText(KOLZLEC));
+        siemensOrderData.CZESC.SetString(NormalizeText(CZESC));
         siemensOrderData.PRZESYLKA = (short)PRZESYLKA;
         siemensOrderData.FAKTOR = (short)FAKTOR;
         siemensOrderData.SZTUKPOZ = (float)SZTUKPOZ;
         siemensOrderData.POZ_WYKWYS = (float)POZ_WYKWYS;
-        siemensOrderData.TYP.SetString(TYP);
+        siemensOrderData.TYP.SetString(NormalizeText(TYP));
         siemensOrderData.DLUGOSC = (float)DLUGOSC;
         siemensOrderData.SZEROKOSC = (float)SZEROKOSC;
         siemensOrderData.DRZECZ_BBL = (float)DRZECZ;
@@ -74,19 +76,19 @@ public class ProductionOrder
         siemensOrderData.SZTPLN_BBN = (float)SZTPLN;
         siemensOrderData.SZPLL_CBN = (float)SZPLL;
         siemensOrderData.SZTKR_PCS = (float)SZTKR;
-        siemensOrderData.TFT.SetString(TFT);
+        siemensOrderData.TFT.SetString(NormalizeText(TFT));
         siemensOrderData.THTH = (float)THTH;
         siemensOrderData.TFTF = (float)TFTF;
-        siemensOrderData.TFD.SetString(TFD);
+        siemensOrderData.TFD.SetString(NormalizeText(TFD));
         siemensOrderData.TFDH = (float)TFDH;
         siemensOrderData.TFDF = (float)TFDF;
-        siemensOrderData.TFL.SetString(TFL);
+        siemensOrderData.TFL.SetString(NormalizeText(TFL));
         siemensOrderData.TFLH = (float)TFLH;
         siemensOrderData.TFLF = (float)TFLF;
-        siemensOrderData.TFR.SetString(TFR);
+        siemensOrderData.TFR.SetString(NormalizeText(TFR));
         siemensOrderData.TFRH = (float)TFRH;
         siemensOrderData.TFRF = (float)TFRF;
-        siemensOrderData.NRZLEC.SetString(NRZLEC);
+        siemensOrderData.NRZLEC.SetString(NormalizeText(NRZLEC));
 
         return siemensOrderData;
     }
@@ -130,5 +132,46 @@ public class ProductionOrder
         TFRH = Math.Round(siemensOrderData.TFRH, 2);
         TFRF = Math.Round(siemensOrderData.TFRF, 2);
         NRZLEC = siemensOrderData.NRZLEC.ToString();
+    }
+
+    public static string NormalizeText(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        // małe litery
+        string result = input.ToLowerInvariant();
+
+        // ręczna zamiana polskich znaków
+        result = result
+            .Replace('ą', 'a')
+            .Replace('ć', 'c')
+            .Replace('ę', 'e')
+            .Replace('ł', 'l')
+            .Replace('ń', 'n')
+            .Replace('ó', 'o')
+            .Replace('ś', 's')
+            .Replace('ź', 'z')
+            .Replace('ż', 'z');
+
+        // usunięcie pozostałych znaków diakrytycznych
+        string normalized = result.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+
+        foreach (char c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        result = sb.ToString().Normalize(NormalizationForm.FormC);
+
+        // pozostaw tylko standardowe znaki:
+        // litery, cyfry, spacje oraz najczęściej używane separatory
+        result = Regex.Replace(result, @"[^a-z0-9|\-_. ]", "");
+
+        return result;
     }
 }

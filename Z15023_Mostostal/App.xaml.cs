@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Configuration;
 using System.Data;
-using System.Threading.Channels;
 using System.Threading;
+using System.Threading.Channels;
 using System.Windows;
 using Z25023_Mostostal.PlcCommunication;
 using Z25023_Mostostal.PlcCommunication.Drivers;
@@ -19,6 +19,7 @@ using Z25023_Mostostal.State;
 using Z25023_Mostostal.Tasks.Inbound_PLC_PC;
 using Z25023_Mostostal.Tasks.Outbound_PC_PLC;
 using Z25023_Mostostal.ViewModels;
+using Z25023_Mostostal.Windows;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Z25023_Mostostal
@@ -164,6 +165,7 @@ namespace Z25023_Mostostal
 
                 // Rejestrujemy okno ustawień jako Transient, ponieważ chcemy mieć świeżą instancję tego okna za każdym razem, gdy użytkownik zdecyduje się otworzyć ustawienia. Dzięki temu, każde otwarcie okna będzie niezależne i nie będzie wpływać na inne otwarte okna ustawień (jeśli użytkownik otworzy kilka razy).
                 builder.Services.AddTransient<SettingsWindow>();
+                builder.Services.AddTransient<AboutWindow>();
 
 
                 // ==========================================
@@ -323,7 +325,7 @@ namespace Z25023_Mostostal
                     "Aplikacja jest już uruchomiona w systemie.",
                     "Informacja",
                     MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                    MessageBoxImage.Warning);
 
                 _mutex.Dispose();
                 _mutex = null;
@@ -331,6 +333,7 @@ namespace Z25023_Mostostal
                 Application.Current.Shutdown();
                 return;
             }
+
 
             // Jeśli aplikacja uruchamia się po raz pierwszy, kontynuujemy standardowy proces startowy
             base.OnStartup(e);

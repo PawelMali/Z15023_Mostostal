@@ -49,16 +49,16 @@ public class Task60_CalculateCuttingHandler : IInboundTaskHandler
             double marginLeft = Math.Round(currentOrder.PSKRAJDL_TEF, 2);
             double marginRight = Math.Round(currentOrder.PSKRAJDL2_DEF, 2);
 
-            // Dokładne sprawdzenie trybu seratacji (tylko gdy typ zawiera "X5" lub "X7")
+            // Dokładne sprawdzenie trybu seratacji (tylko gdy typ zawiera "X5" lub "X7") po normalizacji x5 lub x7
             string typ = currentOrder.TYP?.ToString()?.Trim() ?? "";
 
             Z25023_Mostostal_Cięcie.Core.CuttingType cuttingType = 
-                    (currentOrder.TFT.ToString() == "Bednarka" )
+                    (currentOrder.TFT.ToString() == "bednarka" )
                     ? Z25023_Mostostal_Cięcie.Core.CuttingType.T
                     : Z25023_Mostostal_Cięcie.Core.CuttingType.P;
 
 
-            bool isSerration = typ.Contains("X5") || typ.Contains("X7");
+            bool isSerration = typ.Contains("x5") || typ.Contains("x7");
 
 
             // 3. Uruchomienie bezpiecznej symulacji matematycznej w tle
