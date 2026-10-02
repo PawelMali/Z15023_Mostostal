@@ -15,7 +15,7 @@ public class SiemensConfigData : UDT
     public Int16 Status;
 
     // Tablica 100 zmiennych REAL (ASComm natywnie wspiera mapowanie tablic w UDT)
-    public Single[] Parameters = new Single[100];
+    public Single[] Parameters = new Single[250];
 
     public SiemensConfigData()
     {
