@@ -164,8 +164,8 @@ public class RecipeRepository
 
                 var config = new SiemensConfigData { Status = 1 }; // 1 = Znaleziono
 
-                // Pętla od 0 do 249 mapująca kolumny Param0..Param249 na tablicę w C#
-                for (int i = 0; i < 250; i++)
+                // Pętla od 0 do 749 mapująca kolumny Param0..Param749 na tablicę w C#
+                for (int i = 0; i < 750; i++)
                 {
                     if (row.TryGetValue($"Param{i}", out var val) && val != null)
                     {
@@ -205,7 +205,7 @@ public class RecipeRepository
             var values = new List<string>();
             var updates = new List<string>();
 
-            for (int i = 0; i < 250; i++)
+            for (int i = 0; i < 750; i++)
             {
                 string paramName = $"Param{i}";
                 string varName = $"@{paramName}";
